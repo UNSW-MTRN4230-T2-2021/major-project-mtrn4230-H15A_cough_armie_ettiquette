@@ -10,4 +10,6 @@ Once, the proposed changes are identified and unanimously agreed on, the enginee
 
 ## Scope Management Plan
 
-insert
+As part of the project, the agile methodology will be used to manage and plan the work involved in the project. As part of this methodology, project scope is defined as a list of user stories which are high level requirements representing a small chunk of the work involved to finish and deliver the project. Before work is started, a list of user stories is generated and put into a list of unfinished tasks known as the backlog. User stories are prioritized in the backlog in accordance to business value, complexity and costs. The user stories are completed incrementally in sprints.
+
+A sprint is a period of time, usually two weeks cycles, where work is completed and verified. Before a sprint is begun, user stories are chosen to be completed in the upcoming sprint based on priority. Estimations are done for each user story to ensure the amount of work chosen to be completed in the sprint is reasonable. One the sprint has begun, the scope of work for the sprint cannot be changed unless absolutely necessary. At the end of each sprint, the scope is verified by reviewing the sprint outcome, ensuring the outcome is accepted by stakeholders. The backlog is then refined in accordance to the sprint outcome to ensure the desired outcome of the project is produced.
