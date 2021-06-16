@@ -16,27 +16,25 @@ A sprint is a period of time, usually two weeks cycles, where work is completed 
 
 ## Risk Management Plan
 
-A methodical approach is used to identify project risks, where the team identifies potential hazards at each stage of the process. The risks associated with these hazards are then determined before being scored and ranked in terms of severity. The most important risks are added to the project schedule to ensure mitigation plans are established by the team prior to a stage’s commencement. Every two weeks, the team will review the risks and associated management plans and update them if required.
+A methodical approach is used to identify project risks, where the team identifies potential hazards at each stage of the process. The risks associated with these hazards are then determined before being scored and ranked in terms of severity. The most important risks are added to the project schedule to ensure mitigation plans are established by the team prior to a stage’s commencement. Every two weeks, the team will review the risks and associated management plans. The project manager updates the risk management plan according to the change management plan.
 Upon project completion, the team will gather to analyze the risk management process. Improvements to this process are identified and noted for future projects.
 
 ## Communication Management Plan
 
-A communications management plan is required to ensure that all team members and stakeholders know contact details throughout the project’s duration. The plan aims to record the process, type, and expectations of communications. This is implemented with a communication matrix to easily identify who is communicating, what information is being communicated, when communications are taking place, and to whom members are communicating. The communication matrix may be updated each weekly meeting, as communication details are subject to change. New communications may be appended to the matrix during the project’s duration. 
+A communications management plan is required to ensure that all team members and stakeholders know contact details throughout the project’s duration. The plan aims to record the process, type, and expectations of communications. This is implemented with a communication matrix to easily identify who is communicating, what information is being communicated, when communications are taking place, and to whom members are communicating. The communication matrix may need to be updated during the project’s duration due to changes in personnel, project scope, or other reasons. If changes to the communication management plan are proposed, the project manager is responsible for managing these changes and distribute updated plans to the team and stakeholders, as per the change management plan.
 
 Communication Type | Description | Frequency | Format | Participants/Distribution | Deliverable | Owner
 ------------------ | ----------- | --------- | ------ | ------------------------- | ----------- | -----
-Project Team Meeting | Lab meeting to discuss current status and future work. | Weekly | In Person/Conference call | Project Team | Updated Work Progress | Project Manager
-Status Report | Consulting stakeholder (Max) with current status | Weekly | In Person | Project Team, Stakeholders | Status Report | Project Manager
+Project Team Meeting | Lab meeting to discuss current status and future work. | Weekly | In Person<br/>Conference call | Project Team | Updated Work Progress<br/> Meeting Minutes | Project Manager
+Status Report | Consulting stakeholder (Max) with current status | Weekly | In Person | Project Team<br/>Stakeholders | Status Report | Project Manager
+Technical Design Meetings | Discuss technical designs for the project | As required | In Person<brb/>Conference call | Team Technical Members | Meeting Minutes | Project Manager
 
+A project team directory is included in the plan to provide contact information and roles of all team members for stakeholders.
 
-Project Team Technical Review | Informal meeting to update status with current work. | Weekly | Online | Project Team | Updated Work Status
-
-Inter Team Consultation (online, as required)
-
-A project team directory is included in the plan to provide contact information and details of all team members for stakeholders.
-
-Name -> Title -> Email -> Phone
-
-Communication conduct:
-Meetings:
-The Project Manager will
+Name | Title | Email
+---- | ----- | -----
+Arielle Hui | TBA | TBA
+Daniel Huang | TBA | TBA
+Daniel Lin | TBA | TBA
+Jovanni Tjuandi | TBA | TBA
+Nethmini Alahakoon | TBA | TBA
