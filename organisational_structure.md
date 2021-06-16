@@ -1,3 +1,5 @@
+## Organisational Structure:
+
 We will be using a flat organisational structure for our company.  
 
 Decision Making Processes: 
