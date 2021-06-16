@@ -11,3 +11,6 @@ Senior Programmer (1 position): Responsible for oversight of all coding and prog
 Software Programmer (2 positions): Required to complete all programming tasks of the project, as well as perform status reporting. All programming tasks will be reviewed by the Senior Programmer before implementation. Required to report to the Senior Programmer regarding completion of programming tasks. Required to send written documentation to the technical writer. 
 
 Technical Writer (1 position): Responsible for reviewing, formatting, and editing all documentation of the project. Responsible for taking minutes of meeting at each group meeting. The technical writer will liase with the project manager, senior programmer, and software programmers regarding documentation that they may produce, and will post the reviewed versions of this documentation on the group’s online communication platform, for review by the group. 
+
+Notes:
+As our company's team is limited to only five people, these roles are not strictly exclusive. All team members will be expected to contribute to programming and writing up documentation (as well as any other general tasks that may arise) to some degree.  
