@@ -14,3 +14,7 @@ The company will deliver the following list of milestones for this project.
 10.	Implement algorithm on different scenarios (AI to play the game).
 11.	Test play on the robot arm. 
 12.	Make final improvements based on test results. 
+
+
+## Schedule Management Plan
+A Gantt chart will be used to manage the schedule of the project. It will include each of the deliverables in order as well as estimations of the deliverable’s completion time. The initial version of the project Gantt chart is committed in group Github repository under ‘nethmini/PMP’ branch.
