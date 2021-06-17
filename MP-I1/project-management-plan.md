@@ -39,3 +39,12 @@ Daniel Huang | TBA | TBA
 Daniel Lin | TBA | TBA
 Jovanni Tjuandi | TBA | TBA
 Nethmini Alahakoon | TBA | TBA
+
+Meetings:
+
+The Project Manager will distribute a meeting agenda to team members on the day prior to each meeting. All team members are responsible for reviewing the agenda prior to the meeting. During meetings, each member ensures they adhere to agenda times, and the technical writer will record task distribution to the team. Meeting minutes will be distributed live.
+
+Informal Communication:
+
+The Messenger application is used for all informal communication. GitHub Pull Requests are used when pushing to higher branches, requesting review from relevant team members. It is the responsibility of the requester to ensure the reviewer is aware of the request. The team members tasked with reviewing pull requests will complete the review within one day.
+
