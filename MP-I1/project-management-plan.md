@@ -1,6 +1,7 @@
 # Project Management Plan
 
-## Change Management Plan
+## Project Scope 
+The scope of the project includes planning, design, development and testing of a program that plays tic-tac-toe against a human player which will be run on a certain robotic arm. Also, in the scope of project is to create the physical components of a tic-tac-toe game including X and O tiles, a black playing mat and the playing board. The program will need to meet its functional requirements and must adhere to a certain standard of quality. The scope also covers maintaining thorough documentation and ensuring enough information for end users to execute the program and troubleshoot common problems. The scope of this project includes adding safety measures on the program to reduce hazards for the program operator. 
 
 As the project goal is complex, there will likely be revisions to the project. Such revisions can include modifications to the milestones, redefining scope with accordance to timeline or even modifications to technical implementations already in place such as switching out a software algorithm or changing the physical attributes of the system.
 The proposals of technical variations to the project should be first discussed within the development team. This ensures everyone involved in the implementation of the project is aware of the change. Engineering managers must be present at such meetings to gather proposed changes and understand why these changes are being proposed. Engineering managers can also propose changes to the milestone and assist in redefining scope with accordance to the team’s progress and budget.
@@ -30,3 +31,11 @@ The company will deliver the following list of milestones for this project.
 ## Schedule Management Plan
 
 A Gantt chart will be used to manage the schedule of the project. It will include each of the deliverables in order as well as estimations of the deliverable’s completion time. The initial version of the project Gantt chart is committed in group Github repository under ‘nethmini/PMP’ branch.
+The project will be executed internally and not outsourced. The scope of the project does not include variations for program to be run on different operating systems. The scope does not include developing the robotic arm or developing updates and revisions.
+
+## Quality Management Plan
+The outcome of the project should meet a certain quality expectation and throughout the project, this must be ensured so that the final solution meets this expectation. Change in expectations may happen throughout the project and there needs to be a way of managing that. This section focuses on ways to manage quality, their expectation, changes along the way, and implementation along with assurance. This should be a maintainable management plan. 
+
+Project requirements will be a result of stakeholder research by product owners which will be translated into deliverables. These deliverables will be passed to the project manager, who will define quality expectations for each deliverable and have it approved by the product owner. Once approved the project manager will communicate the deliverables, their functional requirement and quality expectations to respective teams. Each team will have one member acting as quality assurance to ensure the teams deliverable meet its requirement and is up to quality standards. Quality assurance for each team will utilize specific tools and follow consistent methodology to ensure quality standard are met. In case of quality concerns, first consult the team, if it is not resolved then communicate to project manager. 
+
+The aim of this quality management plan (QMP) is to have clear criteria of what is the expected quality of the product and have a straightforward way to communicate these expectations to teams implementing the functionalities. Project managers work closely with teams and change is easily communicated then project managers simply get approval from an owner. The short chain is put in place to reduce time required to deal with changing expectations in an agile project.
