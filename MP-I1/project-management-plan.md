@@ -42,3 +42,35 @@ The outcome of the project should meet a certain quality expectation and through
 Project requirements will be a result of stakeholder research by project managers which will be translated into deliverables. These deliverables will be passed to the software leads (senior programmers), who will define quality expectations for each deliverable and have it approved by the project manager. Once approved the software leads will communicate the deliverables, their functional requirement and quality expectations to respective teams. Everyone in the team is responsible for verifying their work is up to quality expectation. Additionally, Each team will have one member acting as quality assurance to ensure the teams deliverable meet its requirement and is up to quality standards. Quality assurance for each team will utilize specific tools and follow consistent methodology to ensure quality standard are met. In case of quality concerns, first consult the team, if it is not resolved then communicate to senior developers. 
 
 The project should always have clear criteria of what is the expected quality of the product and have a straightforward way to communicate these expectations to teams implementing the functionalities. Software leads work closely with teams and change is easily communicated then software leads simply get approval from project manager. Always confirm that everyone has a shared understanding of the current quality expectation.
+
+## Risk Management Plan
+A methodical approach is used to identify project risks, where the team identifies potential hazards at each stage of the project schedule. The risks associated with these hazards are determined before being scored and ranked in terms of severity. The most important risks are added to the project schedule to ensure mitigation plans are established by the team prior to a stage’s commencement. Every two weeks, the team will review the risks and associated monitoring methods. If changes to the risk management plan are approved, the project manager updates the risk management plan according to the change management plan.
+
+Upon project completion, the team will gather to analyze the risk management process. Improvements to this process are identified and noted for future projects.
+
+## Communication Management Plan
+A communications management plan is required to ensure that all team members and stakeholders know relevant contact details throughout the project’s duration. The plan aims to record the process, type, and expectations of communications. This is implemented with a communication matrix to easily identify who is communicating, what information is being communicated, when communications are taking place, and to whom members are communicating. The communication matrix may need to be updated during the project’s duration due to changes in personnel, project scope, or other reasons. If changes to the communication management plan are proposed, the project manager is responsible for managing these changes and distributing updated plans to the team and stakeholders, as per the change management plan.
+
+Communication Type | Description | Frequency | Format | Participants/Distribution | Deliverable | Owner
+------------------ | ----------- | --------- | ------ | ------------------------- | ----------- | -----
+Project Team Meeting | Lab meeting to discuss current status and future work. | Weekly | <ul><li>In Person</li><li>Conference call</li></ul> | Project Team | <ul><li>Updated Work Progress</li><li>Meeting Minutes</li></ul> | Project Manager
+Status Report | Consulting stakeholder (Max) about current status | Weekly | In Person | <ul><li>Project Team</li><li>Stakeholders</li></ul> | Status Report | Project Manager
+Technical Design Meetings | Discuss technical designs for project | As required | <ul><li>In Person</li><li>Conference call</li></ul> | Team Technical Members | Meeting Minutes | Project Manager
+
+A project team directory is included in the plan to provide contact information and roles of all team members for stakeholders.
+
+Name | Title | Email
+---- | ----- | -----
+Arielle Hui | TBA | TBA
+Daniel Huang | TBA | TBA
+Daniel Lin | TBA | TBA
+Jovanni Tjuandi | TBA | TBA
+Nethmini Alahakoon | TBA | TBA
+
+Meetings:
+
+The Project Manager will distribute a meeting agenda to team members on the day prior to each meeting. All team members are responsible for reviewing the agenda prior to the meeting. During meetings, each member ensures they adhere to agenda times, and the technical writer will record task distribution to the team. Meeting minutes will be distributed live.
+
+Informal Communication:
+
+The Messenger application is used for all informal communication. GitHub Pull Requests are used when pushing to higher branches, requesting review from relevant team members. It is the responsibility of the requester to ensure the reviewer is aware of the request. The team members tasked with reviewing pull requests will complete the review within one day.
