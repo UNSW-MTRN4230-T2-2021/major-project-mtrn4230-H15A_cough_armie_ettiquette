@@ -53,7 +53,7 @@ A sprint is a period of time, usually two weeks cycles, where work is completed 
 
 ## Schedule Management Plan
 
-A Gantt chart will be used to manage the schedule of the project. It will include each of the deliverables in order as well as estimations of the deliverable’s completion time. The initial version of the project Gantt chart is committed in group Github repository under ‘MP-G2’ branch in 'MP-G2' folder.
+A Gantt chart will be used to manage the schedule of the project. It will include each of the deliverables in order as well as estimations of the deliverable’s completion time. The initial version of the project Gantt chart is committed in group Github repository under ‘MP-G2’ branch in 'MP-I1' folder.
 The project will be executed internally and not outsourced. The scope of the project does not include variations for program to be run on different operating systems. The scope does not include developing the robotic arm or developing updates and revisions.
 
 ## Quality Management Plan
