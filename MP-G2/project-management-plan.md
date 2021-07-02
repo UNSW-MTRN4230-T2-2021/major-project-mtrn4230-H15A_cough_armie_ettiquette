@@ -106,3 +106,17 @@ The Project Manager will distribute a meeting agenda to team members on the day 
 Informal Communication:
 
 The Messenger application is used for all informal communication. GitHub Pull Requests are used when pushing to higher branches, requesting review from relevant team members. It is the responsibility of the requester to ensure the reviewer is aware of the request. The team members tasked with reviewing pull requests will complete the review within one day.
+
+**References:**
+
+All Average Australian Employee salaries from PayScale
+
+https://www.payscale.com/research/AU
+
+<https://shxiangjing.en.alibaba.com/product/62225088738-807439491/Universal_UR5_UR5e_robot_arm_price_and_total_station_robot_of_pick_and_place_robot_machine.html>
+
+<https://automationdistribution.com/robotiq-epick-vacuum-gripper-for-universal-robots/>
+
+<https://www.bunnings.com.au/customwood-mdf-3mm-900-x-600mm-white-melamine-backing_p0610153>
+
+<https://www.bunnings.com.au/search/products?q=acrylic%20sheet&sort=BoostOrder&page=1>
