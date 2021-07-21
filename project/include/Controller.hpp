@@ -15,6 +15,8 @@ public:
     Controller(ros::NodeHandle &n);
 
     void showBoardState() { mState.showBoardState(); }
+
+    // TODO: Private this function
     BoardState getNewBoardState();
 
     void saveBoardState(BoardState &state);

@@ -33,14 +33,5 @@ int main(int argc, char **argv) {
 
     b.showBoardState();
 
-    // c.showBoardState();
-    // BoardState::Board brod{{{' ', 'X', ' '},
-    //                         {'O', 'X', ' '},
-    //                         {'H', 'T', 'C'}}};
-    // BoardState b{brod};
-    // c.saveBoardState(b);
-    // c.showBoardState();
-    // c.showBoardState();
-
     ros::spin();
 }

@@ -13,7 +13,6 @@ bool ImageProcessor::serviceHandler(project::ImageService::Request &req,
     std::vector<Piece> points {Piece(0, 1, 'X'), Piece(20, 30, 'X'), Piece(100, 50, 'O'),
                                Piece(50, 70, 'O'), Piece(80, 90, 'X'), Piece(11, 60, 'O')};
 
-    // Board 2-7, 2-7
     // TODO: Move this out
     BoardState board;
     project::Point point_msg;
@@ -39,20 +38,15 @@ bool ImageProcessor::serviceHandler(project::ImageService::Request &req,
 
     res.board = board.boardToString();
     res.pieces = point_array_msg;
+
+    // TODO: add conversion from piece on board to board FoR
 }
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "image_process");
     ros::NodeHandle n;
 
-    // float gridLength = (10.0 - 2.0) / 3.0;
-    // int x { (int)ceil((2.1 - 2.0) / gridLength) };
-    // int y{ (int)ceil((9.9 - 2.0) / gridLength) };
-
-    // std::cout << gridLength << x << " " << y << std::endl;
-
     ImageProcessor ip(n);
-    // ros::ServiceServer service = n.advertiseService("image_service", &ImageProcessor::serviceHandler, &ip);
 
     ros::spin();
 
