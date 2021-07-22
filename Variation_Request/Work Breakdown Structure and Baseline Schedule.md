@@ -88,7 +88,7 @@ Alahakoon**
 <td></td>
 <td><strong>4 days</strong></td>
 <td><strong>W8 Thurs</strong></td>
-<td><strong>W9 Mon</strong></td>
+<td><strong>W9 Wed</strong></td>
 <td><strong>JT, NA</strong></td>
 </tr>
 <tr class="odd">
