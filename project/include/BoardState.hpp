@@ -7,24 +7,6 @@
 #include <array>
 #include <sstream>
 
-class Piece {
-private:
-    float mX;
-    float mY;
-    char mLetter;
-
-public:
-    Piece(const float &x, const float &y, const char &letter): 
-        mX{x}, mY{y}, mLetter{letter} {}
-
-    bool inGrid() { return (mX < 100 && mX > 10 && 
-                            mY < 100 && mY > 10); }
-
-    float getX() { return mX; }
-    float getY() { return mY; }
-    char getLetter() { return mLetter; }
-};
-
 class BoardState {
 public:
     enum {

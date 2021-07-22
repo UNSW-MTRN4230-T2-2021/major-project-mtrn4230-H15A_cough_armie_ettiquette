@@ -3,21 +3,21 @@
 
 #include <ros/ros.h>
 
-#include "project/ImageService.h"
+#include "project/BoardInfo.h"
 #include "BoardState.hpp"
 
-class Controller {
+class GameController {
 private:
     BoardState mState;
-    ros::ServiceClient mImageClient;
+    ros::Subscriber mImageSub;
     
 public:
-    Controller(ros::NodeHandle &n);
+    GameController(ros::NodeHandle &n);
 
     void showBoardState() { mState.showBoardState(); }
 
-    // TODO: Private this function
-    BoardState getNewBoardState();
+    void imageCallBack(const project::BoardInfo::ConstPtr &msg);
+    // BoardState getNewBoardState();
 
     void saveBoardState(BoardState &state);
 };

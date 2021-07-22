@@ -52,14 +52,14 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Point.msg
-  PointArray.msg
+#  PointArray.msg
+  BoardInfo.msg
 )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  ImageService.srv
-)
+# add_service_files(
+#  FILES
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -136,8 +136,8 @@ target_link_libraries(BoardState ${catkin_LIBRARIES})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(controller src/Controller.cpp)
-target_link_libraries(controller ${catkin_LIBRARIES} BoardState)
+add_executable(gameController src/GameController.cpp)
+target_link_libraries(gameController ${catkin_LIBRARIES} BoardState)
 
 add_executable(imageProcessor src/ImageProcessor.cpp)
 target_link_libraries(imageProcessor ${catkin_LIBRARIES} BoardState)

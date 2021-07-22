@@ -1,4 +1,4 @@
 <launch>
+    <node name="game_controller" pkg="project" type="gameController" output="screen" />
     <node name="processor" pkg="project" type="imageProcessor" output="screen" />
-    <node name="game_controller" pkg="project" type="controller" output="screen" />
 </launch>
