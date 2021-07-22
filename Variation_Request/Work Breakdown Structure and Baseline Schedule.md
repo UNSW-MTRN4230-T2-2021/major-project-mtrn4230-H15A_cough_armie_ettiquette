@@ -124,7 +124,7 @@ Alahakoon**
 <td>Robot arm moves smoothly when executing all movements.</td>
 <td>2 hours</td>
 <td>W8 Sun</td>
-<td>W9 Mon</td>
+<td>W9 Wed</td>
 <td>JT, NA</td>
 </tr>
 <tr class="odd">
