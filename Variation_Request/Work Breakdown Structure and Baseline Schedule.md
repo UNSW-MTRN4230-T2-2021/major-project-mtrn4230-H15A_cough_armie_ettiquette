@@ -246,7 +246,7 @@ Alahakoon**
 <td>Having the implementation of each algorithm in isolation and acting as black boxes, this should be implemented in C++</td>
 <td>5 days</td>
 <td>W7 Sat</td>
-<td>W8 Wed</td>
+<td>W9 Wed</td>
 <td>JT</td>
 </tr>
 <tr class="even">
