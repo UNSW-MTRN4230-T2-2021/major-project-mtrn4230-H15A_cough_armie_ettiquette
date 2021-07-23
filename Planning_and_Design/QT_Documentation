@@ -1,1 +1,17 @@
 ** QT Research **
+
+- Qt is a full development framework with tools designed to streamline the creation of applications and user interfaces for desktop, embedded, and mobile platforms.
+- Qt Widgets provides a library of UI elements which allow you to create classic desktop-style user interfaces.
+- Qt Quick is a library providing types and functionalities for building modern, fluid, animated UIs.
+- It can used on Linux systems.
+
+Links:
+QT Webpage: https://www.qt.io/design
+QT (Youtube Page): https://www.youtube.com/channel/UCsyT1C1M-QoHQREjsixgayQ
+Introduction to QT - UI Design (Tutorial): https://www.youtube.com/watch?v=0Po3tE9yUcU
+
+Areas to Research:
+QT Capabilities and Uses: DONE  
+Installation and Download: DONE 
+Understanding how to use QT: IN PROGRESS
+
