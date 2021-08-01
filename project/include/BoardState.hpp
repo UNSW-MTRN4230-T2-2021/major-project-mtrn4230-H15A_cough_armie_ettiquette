@@ -39,5 +39,4 @@ public:
 
     void setBoardState(BoardState &state);
 };
-
 #endif
