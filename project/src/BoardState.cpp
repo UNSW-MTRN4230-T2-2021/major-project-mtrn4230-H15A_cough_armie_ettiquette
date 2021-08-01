@@ -33,6 +33,5 @@ std::string BoardState::boardToString() {
 }
 
 void BoardState::setBoardState(BoardState &state) {
-    // mBoard = std::move(b.mBoard);
     mBoard = state.mBoard;
 }

@@ -16,16 +16,15 @@ public:
     typedef std::array<std::array<char, BOARD_SIZE>, BOARD_SIZE> Board;
 
 private:
-    // std::unique_ptr<Board> mBoard;
     Board mBoard;
 
 public:
     BoardState(Board board = {{{' ', ' ', ' '},
                                {' ', ' ', ' '},
-                               {' ', ' ', ' '}}}): //mBoard{std::make_unique<Board>(board)} {}
-                                                    mBoard{board} {}
+                               {' ', ' ', ' '}}}): mBoard{board} {}
+
     BoardState(const std::string &boardString);
-    // Temporary function
+
     void showBoardState() {
         for (auto &row : mBoard) {
             for (auto &v : row) {
@@ -40,5 +39,4 @@ public:
 
     void setBoardState(BoardState &state);
 };
-
 #endif
