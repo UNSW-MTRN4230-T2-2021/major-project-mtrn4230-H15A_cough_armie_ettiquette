@@ -6,7 +6,6 @@
 #include <math.h>
 
 #include "project/Point.h"
-#include "project/PointArray.h"
 #include "project/BoardInfo.h"
 
 #include "BoardState.hpp"

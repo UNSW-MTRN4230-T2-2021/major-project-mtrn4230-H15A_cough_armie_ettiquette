@@ -1,7 +1,12 @@
 #include "GameController.hpp"
 
 GameController::GameController(ros::NodeHandle &n):
-    mImageSub{n.subscribe("processed_image", 100, &GameController::imageCallBack, this)} {
+    mImageSub{n.subscribe("processed_image", 100, &GameController::imageCallBack, this)},
+    SetCount{0},
+    CurrentPlayer{0},
+    DifficultyLevel{-1},
+    TimeLimit{120}
+{
 }
 
 void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
