@@ -8,6 +8,7 @@ Main Window:
   - Robot/Player Turn
   - Timer
   - Documentation Info (Help button)
+  - New Game Button (should work at any point during a game)
   - Power Off Button (should work at any point during a game) 
   
 
@@ -23,7 +24,7 @@ Secondary Window: Displays messages and sends messages back.
   - Power Off (should close all windows upon pressing OK button)
   
 Tertiary Window:
-  - Displays documentation
+  - Displays documentation (note: game should pause when viewing the documentation)
   
 - Sends message types:
   - Game difficulty (easy/hard)
