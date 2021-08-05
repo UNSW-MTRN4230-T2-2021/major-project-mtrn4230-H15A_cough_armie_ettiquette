@@ -1,0 +1,33 @@
+**Features:**
+
+Main Window:
+- Displays information:
+  - Game Difficulty
+  - Robot and Player Win Count (Robot | Player | Draw)
+  - Match number (out of 3)
+  - Robot/Player Turn
+  - Timer
+  - Documentation Info (Help button)
+  - Power Off Button (should work at any point during a game) 
+  
+
+Secondary Window: Displays messages and sends messages back.
+- Displays message types:
+  - Robot Power On
+  - Game Start
+  - Rule Violations
+  - End Robot Turn
+  - Start User Turn
+  - Robot/User Wins or Draw
+  - Start New Game Query
+  - Power Off (should close all windows upon pressing OK button)
+  
+Tertiary Window:
+  - Displays documentation
+  
+- Sends message types:
+  - Game difficulty (easy/hard)
+  - End User Turn
+  - Violation Resolved (should lead to a violation resolution check)
+  
+  
