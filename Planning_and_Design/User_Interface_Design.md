@@ -10,35 +10,31 @@
   - Documentation Info (Help button)
   - New Game Button (should work at any point during a game)
   - Power Off Button (should work at any point during a game) 
+  - Virtual Board [Request, Service: UserMoveService] NOTE: Sends piece location in terms of row | col  
   
 
 ## Secondary Window: Displays messages and sends messages back.
 ### Displays message types:
-  - Robot Power On [Receive, Topic: MessagesToUser]
-  - Game Start [Receive, Topic: MessagesToUser]
-  - Rule Violations [Receive, Topic: MessagesToUser]
-  - End Robot Turn [Receive, Topic: MessagesToUser]
-  - Start User Turn [Receive, Topic: MessagesToUser]
-  - Robot/User Wins or Draw [Receive, Topic: MessagesToUser]
-  - Robot/User Wins Overall or Draw Overall [Receive, Topic: MessagesToUser]
-  - Start New Game Query
-  - Power Off (should close all windows upon pressing OK button) [Topic: MessagesToUser]
+  - Robot Power On [Receive, Topic: MessagesToUser] (Has a status number)
+  - Game Start [Receive, Topic: MessagesToUser] (Has a status number)
+  - Rule Violations [Receive, Topic: RuleViolations] (Has a range of statuses. Give this a separate topic)
+  - End Robot Turn [Receive, Topic: MessagesToUser] (Has a status number)
+  - Start User Turn [Receive, Topic: MessagesToUser] (Has a status number)
+  - Robot/User Wins or Draw [Receive, Topic: MessagesToUser] (Has a status number)
+  - Robot/User Wins Overall or Draw Overall [Receive, Topic: MessagesToUser] (Has a status number)
+  - Start New Game Query [direct from UI]
+  - Power Off (should close all windows upon pressing OK button) [Receive, Topic: MessagesToUser OR direct from UI] (Has a status number)
   
 ### Sends message types:
-  - Game difficulty (easy/hard) [Send, Topic: InitialiseController] - send in same message #1
-  - End User Turn [Send, Topic: ImageRequest to Camera] - piece needs to be spawned first using service, which waits until completed.
-  - Timer Expired (Yes/No) [Send, Topic: TimerCheck]
-  - Start New Game [Send, Topic: InitialiseController] - send in same message #1
-  - Power Off [Send, Topic: MessagesToUser]
-  - Violation Resolved (should lead to a violation resolution check) [Send, Topic: ImageRequest to Camera]
+  - Start New Game AND Game Difficulty (Easy/Hard) [Send, Topic: MsgstoController] (Has two possible status numbers)
+  - End User Turn [Send, Topic: MsgstoController] (Has a status number)
+  - Timer Expired [Send, Topic: MsgstoController] (Has a status number) NOTE: Only sends data if timer expires -> record robot win. If the timer doesn't, the game progresses as normal.
+  - Power Off [Send, Topic: MsgstoController] (Has a status number)
+  - Violation Resolved [Send, Topic: MsgstoController] (Has a status number) NOTE: Should have a corresponding violation resolution check in Game Controller.
   
 ## Tertiary Window:
   - Displays documentation (note: game should pause when viewing the documentation)  
   
 ## To Resolve:
-- Will the UI take in the player's actual move, or just the confirmation that the player has ended their turn? If the latter, then the game controller needs to request a user move.
-- Shouldn't the game controller be making the image requests to determine the board state? Otherwise how will it know when to read the image data? We may be able to use a service for this too, instead of a topic, as there is no need to constantly read in this information.
-- What message classes should we separate the messages into?
 - What areas are Jo and Daniel working on that we need to synchronise with? **Daniel: Computer Vision - seeing the pieces and determining what they are. Rule Violation Check is optional.**
-- Split up messages to user interface into different topics.
   
