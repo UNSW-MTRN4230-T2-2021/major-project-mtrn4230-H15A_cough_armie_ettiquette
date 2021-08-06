@@ -20,6 +20,7 @@ Secondary Window: Displays messages and sends messages back.
   - End Robot Turn
   - Start User Turn
   - Robot/User Wins or Draw
+  - Robot/User Wins Overall or Draw Overall
   - Start New Game Query
   - Power Off (should close all windows upon pressing OK button)
   
@@ -29,6 +30,9 @@ Tertiary Window:
 - Sends message types:
   - Game difficulty (easy/hard)
   - End User Turn
+  - Timer Expired (Yes/No)
+  - Start New Game
+  - Power Off
   - Violation Resolved (should lead to a violation resolution check)
   
   
