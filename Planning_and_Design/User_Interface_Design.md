@@ -25,12 +25,12 @@
   - Power Off (should close all windows upon pressing OK button) [Topic: MessagesToUser]
   
 ### Sends message types:
-  - Game difficulty (easy/hard) [Send, Topic: MessagesToUser]
-  - End User Turn [Send, Topic: MessagesToUser]
-  - Timer Expired (Yes/No) [Send, Topic: MessagesToUser]
-  - Start New Game [Send, Topic: MessagesToUser]
+  - Game difficulty (easy/hard) [Send, Topic: InitialiseController] - send in same message #1
+  - End User Turn [Send, Topic: ImageRequest to Camera] - piece needs to be spawned first using service, which waits until completed.
+  - Timer Expired (Yes/No) [Send, Topic: TimerCheck]
+  - Start New Game [Send, Topic: InitialiseController] - send in same message #1
   - Power Off [Send, Topic: MessagesToUser]
-  - Violation Resolved (should lead to a violation resolution check) [Send, Topic: MessagesToUser]
+  - Violation Resolved (should lead to a violation resolution check) [Send, Topic: ImageRequest to Camera]
   
 ## Tertiary Window:
   - Displays documentation (note: game should pause when viewing the documentation)  
@@ -39,6 +39,6 @@
 - Will the UI take in the player's actual move, or just the confirmation that the player has ended their turn? If the latter, then the game controller needs to request a user move.
 - Shouldn't the game controller be making the image requests to determine the board state? Otherwise how will it know when to read the image data? We may be able to use a service for this too, instead of a topic, as there is no need to constantly read in this information.
 - What message classes should we separate the messages into?
-- What areas are Jo and Daniel working on that we need to synchronise with? 
-  
+- What areas are Jo and Daniel working on that we need to synchronise with? **Daniel: Computer Vision - seeing the pieces and determining what they are. Rule Violation Check is optional.**
+- Split up messages to user interface into different topics.
   
