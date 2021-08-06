@@ -37,7 +37,8 @@
   
 ## To Resolve:
 - Will the UI take in the player's actual move, or just the confirmation that the player has ended their turn? If the latter, then the game controller needs to request a user move.
-- Shouldn't the game controller be making the image requests to determine the board state? Otherwise how will it know when 
-- 
+- Shouldn't the game controller be making the image requests to determine the board state? Otherwise how will it know when to read the image data? We may be able to use a service for this too, instead of a topic, as there is no need to constantly read in this information.
+- What message classes should we separate the messages into?
+- What areas are Jo and Daniel working on that we need to synchronise with? 
   
   
