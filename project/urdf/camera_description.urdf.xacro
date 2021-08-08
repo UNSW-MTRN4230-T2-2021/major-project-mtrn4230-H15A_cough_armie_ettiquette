@@ -12,7 +12,7 @@
   <joint name="camera_joint" type="fixed">
     <parent link="world"/>
     <child link="camera_link"/>
-    <origin xyz="1.9 0.25 1.675" rpy="0.0 ${pi/2.6} ${pi}" />
+    <origin xyz="1.9 0.25 1.2" rpy="0.0 ${pi/2.6} ${pi}" />
   </joint>
   <!-- Link camera with world joint -->
   <!-- TODO: INSERT CODE HERE -->

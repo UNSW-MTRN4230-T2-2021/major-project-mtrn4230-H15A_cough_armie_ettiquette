@@ -25,4 +25,5 @@
     <node name="spawn_camera_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param camera_description -model camera -z 0.1" respawn="false" output="screen" />
     <node name="game_controller" pkg="project" type="gameController" output="screen" />
     <node name="processor" pkg="project" type="imageProcessor" output="screen" />
+
 </launch>

@@ -14,11 +14,15 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   gazebo_msgs
   geometry_msgs
+  sensor_msgs
+  cv_bridge
+  image_transport
   tf2
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV REQUIRED)
 
 
 
@@ -59,10 +63,11 @@ add_message_files(
   BoardInfo.msg
 )
 
-## Generate services in the 'srv' folder
-# add_service_files(
-#  FILES
-# )
+# Generate services in the 'srv' folder
+add_service_files(
+  FILES
+  ImageRequest.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -75,6 +80,8 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
+  sensor_msgs
 )
 
 ################################################
@@ -109,7 +116,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES project
-  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -122,6 +129,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ 
@@ -143,7 +151,14 @@ add_executable(gameController src/GameController.cpp)
 target_link_libraries(gameController ${catkin_LIBRARIES} BoardState)
 
 add_executable(imageProcessor src/ImageProcessor.cpp)
-target_link_libraries(imageProcessor ${catkin_LIBRARIES} BoardState)
+target_link_libraries(imageProcessor ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} BoardState)
+
+add_executable(spawn_box_cpp src/spawn_box_cpp.cpp)
+target_link_libraries(spawn_box_cpp ${catkin_LIBRARIES})
+
+# TESTS
+add_executable(testImageProcessor tests/testImageProcessor.cpp)
+target_link_libraries(testImageProcessor ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
