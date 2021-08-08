@@ -47,7 +47,7 @@ Late submission of any of these assessments is not permitted without approval be
 ## Project Package Instructions
 Make sure to set up the GAZEBO_MODEL_PATH in your package directory by adding the following to your ~/.bashrc file:
 ```bash
-export $GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:{path to project package goes here}/models
+export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:{path to your project package goes here}/models
 ```
 Then, either restart the terminal or run:
 ```bash
