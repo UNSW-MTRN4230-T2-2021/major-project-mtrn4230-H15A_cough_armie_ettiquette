@@ -44,7 +44,20 @@ In MP-G5, you will present your solution to the Project Sponsor, demonstrate the
   
 Late submission of any of these assessments is not permitted without approval being granted through the UNSW special consideration process.
 
+## Project Package Instructions
+Make sure to set up the GAZEBO_MODEL_PATH in your package directory by adding the following to your ~/.bashrc file:
+```bash
+export $GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:{path to project package goes here}/models
+```
+Then, either restart the terminal or run:
+```bash
+source ~/.bashrc
+```
 
+To run the project package, execute the following command:
+```bash
+roslaunch project controller.launch
+```
 
 
 
