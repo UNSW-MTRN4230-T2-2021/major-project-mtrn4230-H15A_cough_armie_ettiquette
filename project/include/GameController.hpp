@@ -25,6 +25,7 @@ public:
 private:
     BoardState mState;
     ros::Subscriber mImageSub;
+    ros::Publisher controllerPublisher;
     std::array<int, TOTAL_STAT> WinnerArray;
     int SetCount;
     int CurrentPlayer;
@@ -32,9 +33,10 @@ private:
     int TimeLimit;
     
 public:
-    GameController(ros::NodeHandle &n);
-
     void showBoardState() { mState.showBoardState(); }
+
+    #pragma region FunctionHeaders
+    GameController(ros::NodeHandle &n);
 
     void imageCallBack(const project::BoardInfo::ConstPtr &msg);
 
@@ -53,6 +55,7 @@ public:
     void throwViolation(); // RETURN TYPE DEPENDS ON USER INTERFACE
 
     void endGame(); // announce winner and clear board and ask if user wants to play again
+    #pragma endregion FunctionHeaders
 };
 
 #endif
