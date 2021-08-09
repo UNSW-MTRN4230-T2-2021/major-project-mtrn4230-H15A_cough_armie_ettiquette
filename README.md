@@ -45,6 +45,15 @@ In MP-G5, you will present your solution to the Project Sponsor, demonstrate the
 Late submission of any of these assessments is not permitted without approval being granted through the UNSW special consideration process.
 
 ## Project Package Instructions
+ 
+Follow Lab 09 instructions to symbolically link UR components.
+```bash
+cd {Path to project workspace}/src
+ln -s ~/lab_demo_repos/lab09_demo/ur5e_epick_moveit_config .
+ln -s ~/ur5e_repos/fmauch_universal_robot/ur_description .
+ln -s ~/ur5e_repos/fmauch_universal_robot/ur_kinematics .
+``` 
+
 Make sure to set up the GAZEBO_MODEL_PATH in your package directory by adding the following to your ~/.bashrc file:
 ```bash
 export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:{path to your project package goes here}/models
