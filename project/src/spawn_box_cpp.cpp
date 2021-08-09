@@ -105,13 +105,13 @@ int main(int argc, char **argv) {
 
     spawn_base(n, pose);
 
-    pose.position.x = 1.8;
-    pose.position.y = -0.05;
+    pose.position.x = 1.71;
+    pose.position.y = 0.1348;
     pose.position.z = 0.83;
     spawn_x(n,pose);
 
-    pose.position.x = 1.5;
-    pose.position.y = 0.4;
+    pose.position.x = 1.59;
+    pose.position.y = 0.2548;
     pose.position.z = 0.83;
     spawn_o(n, pose);
    

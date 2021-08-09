@@ -1,5 +1,9 @@
 #include "ros/ros.h"
 #include "project/ImageRequest.h"
+#include "ImageProcessor.hpp"
+
+#include "project/BoardInfo.h"
+#include "BoardState.hpp"
 
 
 int main(int argc, char **argv) {
@@ -9,12 +13,20 @@ int main(int argc, char **argv) {
     ros::ServiceClient client {n.serviceClient<project::ImageRequest>("imageRequest")};
 
     project::ImageRequest srv;
-    // srv.req
+    srv.request.service = ImageProcessor::Request::SETUP;
 
     if (client.call(srv)) {
-        std::cout << "DONE" << std::endl;
+        std::cout << "SETUP DONE" << std::endl;
     }
 
+    srv.request.service = ImageProcessor::Request::PROCESS;
+
+    if (client.call(srv)) {
+        std::cout << "PROCESS DONE" << std::endl;
+        project::BoardInfo info = srv.response.info;
+        BoardState board{info.board};
+        board.showBoardState();
+    }
     // ros::spinOnce();
 
     return 0;

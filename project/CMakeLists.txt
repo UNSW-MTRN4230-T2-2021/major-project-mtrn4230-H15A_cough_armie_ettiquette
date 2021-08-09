@@ -158,7 +158,7 @@ target_link_libraries(spawn_box_cpp ${catkin_LIBRARIES})
 
 # TESTS
 add_executable(testImageProcessor tests/testImageProcessor.cpp)
-target_link_libraries(testImageProcessor ${catkin_LIBRARIES})
+target_link_libraries(testImageProcessor ${catkin_LIBRARIES} BoardState)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
