@@ -38,5 +38,7 @@ public:
     std::string boardToString();
 
     void setBoardState(BoardState &state);
+
+    Board getBoard() { return mBoard; }
 };
 #endif

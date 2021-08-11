@@ -10,16 +10,18 @@ GameController::GameController():
 {
     controllerPublisher = n.advertise<project::ControllerMessage>("controller_message", 100);
     mImageSub = n.subscribe("processed_image", 100, &GameController::imageCallBack, this);
+    
+    for (int i = 0; i < TOTAL_STAT; i++) {
+        controllerStatus.setWinners.push_back(NA);
+    }
 }
 
 void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
-
     BoardState newBoard(msg->board);
     newBoard.showBoardState();
 }
 
 void GameController::saveBoardState(BoardState &state) {
-
     mState.setBoardState(state);
 }
 
@@ -47,8 +49,40 @@ void GameController::determineCurrentPlayer() {
     GameController::controllerPublisher.publish(GameController::controllerStatus);
 }
 
-void indicateSetWinner() {
-    // TODO: Implement Me!
+void GameController::indicateSetWinner() {
+    /* TRIADS: ROWs, COLs, when row == col */
+    // TODO: double check the letters used and who the players are, then update controllerStatus.setWinners[SetCount] = OP or AI
+    
+    BoardState::Board board = mState.getBoard();
+    
+    // Check for all rows
+    for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+        if (board[row][0] == board[row][1] && board[row][1] == board[row][2] && board[row][0] != ' ') {
+            controllerStatus.winStatus = true;
+            controllerStatus.setWinners[SetCount] = board[row][0];
+        }
+    }
+    
+    // Check for all columns
+    for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+        if (board[0][col] == board[1][col] && board[1][col] == board[2][col] && board[0][col] != ' ') {
+            controllerStatus.winStatus = true;
+            controllerStatus.setWinners[SetCount] = board[0][col];
+        }
+    }
+    
+    // Check for diagonals
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
+        controllerStatus.winStatus = true;
+        controllerStatus.setWinners[SetCount] = board[0][0];
+    }
+    
+    if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[1][1] != ' ') {
+        controllerStatus.winStatus = true;
+        controllerStatus.setWinners[SetCount] = board[1][1];
+    }
+    
+    GameController::controllerPublisher.publish(GameController::controllerStatus);
 }
 
 void determineGameWinner() {
@@ -78,6 +112,7 @@ int main(int argc, char **argv) {
     
     while(ros::ok()) {
         firstGame.determineCurrentPlayer();
+        firstGame.indicateSetWinner();
         ros::Duration(3).sleep();
     }
     
