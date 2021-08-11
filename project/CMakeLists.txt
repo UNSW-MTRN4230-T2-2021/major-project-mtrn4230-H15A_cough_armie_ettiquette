@@ -55,6 +55,7 @@ add_message_files(
   PiecePosition.msg
   BoardInfo.msg
   ControllerMessage.msg
+  DisplayMessage.msg
 )
 
 ## Generate services in the 'srv' folder
