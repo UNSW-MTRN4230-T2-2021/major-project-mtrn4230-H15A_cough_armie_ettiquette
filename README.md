@@ -49,7 +49,7 @@ Late submission of any of these assessments is not permitted without approval be
 Follow Lab 09 instructions to symbolically link UR components.
 ```bash
 cd {Path to project workspace}/src
-ln -s ~/lab_demo_repos/lab09_demo/ur5e_epick_moveit_config .
+ln -s {Path to Github Repository}/ur5e_epick_moveit_config .
 ln -s ~/ur5e_repos/fmauch_universal_robot/ur_description .
 ln -s ~/ur5e_repos/fmauch_universal_robot/ur_kinematics .
 ``` 
