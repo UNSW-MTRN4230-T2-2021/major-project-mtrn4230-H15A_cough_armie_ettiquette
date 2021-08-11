@@ -58,6 +58,7 @@ private:
     sensor_msgs::ImageConstPtr mImage;
     cv::Mat mH;
 
+    // Callback Functions
     bool imageRequestCallBack(project::ImageRequest::Request &req,
                               project::ImageRequest::Response &res);
     void processImageCallBack(const sensor_msgs::Image::ConstPtr &msg);

@@ -3,7 +3,7 @@
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
-
+#include "std_srvs/Empty.h"
 #include "std_msgs/String.h"
 #include <std_msgs/Float64.h>
 
@@ -64,18 +64,19 @@ void spawn_o(ros::NodeHandle &n, geometry_msgs::Pose &pose) {
     spawnModel.call(srv);
 }
 
-void spawn_base(ros::NodeHandle &n, geometry_msgs::Pose &pose) {
+void spawn_base(const std::string &filePath, const std::string &modelName, 
+                ros::NodeHandle &n, geometry_msgs::Pose &pose) {
     ros::ServiceClient spawnModel = n.serviceClient<gazebo_msgs::SpawnModel>("/gazebo/spawn_sdf_model");
     spawnModel.waitForExistence();
 
     std::stringstream buffer;
     gazebo_msgs::SpawnModel srv;
-    std::ifstream fd{"src/project/models/base_model/base_model.sdf"};
+    std::ifstream fd{filePath};
 
     buffer << fd.rdbuf();
 
     srv.request.model_xml = buffer.str();
-    srv.request.model_name = "base1";
+    srv.request.model_name = modelName.c_str();
     srv.request.initial_pose = pose;
     srv.request.robot_namespace = "/";
     srv.request.reference_frame = "world";
@@ -85,12 +86,9 @@ void spawn_base(ros::NodeHandle &n, geometry_msgs::Pose &pose) {
     spawnModel.call(srv);
 }
 
-
-int main(int argc, char **argv) {
-
-    ros::init(argc, argv, "lab08_cpp");
+bool serviceCallBack(std_srvs::Empty::Request &req,
+                     std_srvs::Empty::Response &res) {
     ros::NodeHandle n;
-
     geometry_msgs::Pose pose;
     pose.position.x = 1.71;
     pose.position.y = 0.1348;
@@ -103,17 +101,37 @@ int main(int argc, char **argv) {
 
     std::cout << "generating box (students to do)" << std::endl;
 
-    spawn_base(n, pose);
+    std::string basePath {"src/project/models/base_model/base_model.sdf"};
+    ROS_INFO("BEFORE");
+    spawn_base(basePath, "b", n, pose);
+    ROS_INFO("AFTER");
+    // pose.position.x = 1.71;
+    // pose.position.y = 0.1348;
+    // pose.position.z = 0.83;
+    // spawn_x(n,pose);
 
-    pose.position.x = 1.71;
-    pose.position.y = 0.1348;
-    pose.position.z = 0.83;
-    spawn_x(n,pose);
+    // pose.position.x = 1.59;
+    // pose.position.y = 0.2548;
+    // pose.position.z = 0.83;
+    // spawn_o(n, pose);
+}
 
-    pose.position.x = 1.59;
-    pose.position.y = 0.2548;
-    pose.position.z = 0.83;
-    spawn_o(n, pose);
+int main(int argc, char **argv) {
+
+    ros::init(argc, argv, "lab08_cpp");
+    ros::NodeHandle n;
+
+    // ros::ServiceClient client{n.serviceClient<std_srvs::Empty>("hi")};
+    ros::ServiceServer server{n.advertiseService("hi", serviceCallBack)};
+
+    // ros::spin();
+    ros::AsyncSpinner spinner(2);
+    spinner.start();
+
+    // std_srvs::Empty srv;
+    // client.call(srv);
+
+    ros::waitForShutdown();
    
     return 0;
 }
