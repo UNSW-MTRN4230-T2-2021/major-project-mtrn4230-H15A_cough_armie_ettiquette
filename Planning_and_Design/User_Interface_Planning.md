@@ -22,7 +22,7 @@
   - Start User Turn [Receive, Topic: MessagesToUser] (Has a status number)
   - Robot/User Wins or Draw [Receive, Topic: MessagesToUser] (Has a status number)
   - Robot/User Wins Overall or Draw Overall [Receive, Topic: MessagesToUser] (Has a status number)
-  - Start New Game Query [direct from UI]
+  - Start New Game Query [direct from UI] (optional)
   - Power Off (should close all windows upon pressing OK button) [Receive, Topic: MessagesToUser OR direct from UI] (Has a status number)
   
 ### Sends message types:
@@ -33,7 +33,7 @@
   - Violation Resolved [Send, Topic: MsgstoController] (Has a status number) NOTE: Should have a corresponding violation resolution check in Game Controller.
   
 ## Tertiary Window:
-  - Displays documentation (note: game should pause when viewing the documentation)  
+  - Displays documentation (optional: game should pause when viewing the documentation)  
   
 ## To Resolve:
 - What areas are Jo and Daniel working on that we need to synchronise with? **Daniel: Computer Vision - seeing the pieces and determining what they are. Rule Violation Check is optional.**
