@@ -2,6 +2,7 @@
 #define CONTROL_H
 
 #include <ros/ros.h>
+#include <cmath>
 
 #include "project/BoardInfo.h"
 #include "project/ControllerMessage.h"
@@ -13,7 +14,8 @@ public:
     enum Player {
             OP = 1, // indicates the opponent
             AI = -1,// indicates the computer
-            NA = 0  // indicates an undefined
+            NA = 0, // indicates an undefined
+            DR = 2  // indicates one set draw
         };
 
     enum DifficultyLevel {
