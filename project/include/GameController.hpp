@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 
 #include "project/BoardInfo.h"
+#include "project/ControllerMessage.h"
+#include "project/PiecePosition.h"
 #include "BoardState.hpp"
 
 class GameController {
@@ -15,34 +17,38 @@ public:
         };
 
     enum DifficultyLevel {
-            Easy = 0,
+            Easy = -1,
             Hard = 1,
-            Null = -1,
+            Null = 0,
     };
 
     static const int TOTAL_STAT = 3;
+    ros::NodeHandle n; /* This has to be public for each class */
 
 private:
     BoardState mState;
     ros::Subscriber mImageSub;
+    std::array<GameController::Player, TOTAL_STAT> WinnerArray;
+    project::ControllerMessage controllerStatus;
     ros::Publisher controllerPublisher;
-    std::array<int, TOTAL_STAT> WinnerArray;
+
     int SetCount;
-    int CurrentPlayer;
-    int DifficultyLevel;
+    Player CurrentPlayer;
+    DifficultyLevel SelectedDifficulty;
     int TimeLimit;
+    bool GameActive;
+    bool SetStarted;
     
 public:
     void showBoardState() { mState.showBoardState(); }
 
-    #pragma region FunctionHeaders
-    GameController(ros::NodeHandle &n);
+    GameController();
 
     void imageCallBack(const project::BoardInfo::ConstPtr &msg);
 
     void saveBoardState(BoardState &state);
 
-    void determineCurrentPlayer(Player PreviousPlayer);
+    void determineCurrentPlayer();
 
     void indicateSetWinner();
 
@@ -55,7 +61,6 @@ public:
     void throwViolation(); // RETURN TYPE DEPENDS ON USER INTERFACE
 
     void endGame(); // announce winner and clear board and ask if user wants to play again
-    #pragma endregion FunctionHeaders
 };
 
 #endif

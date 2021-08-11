@@ -1,15 +1,15 @@
 #include "GameController.hpp"
-#include "project/PiecePosition.h"
-#include "project/ControllerMessage.h"
 
-GameController::GameController(ros::NodeHandle &n):
-    mImageSub{n.subscribe("processed_image", 100, &GameController::imageCallBack, this)},
-    controllerPublisher{n.advertise<project::ControllerMessage>("controller_message", 100)},
+GameController::GameController():
     SetCount{0},
-    CurrentPlayer{0},
-    DifficultyLevel{-1},
-    TimeLimit{120}
+    CurrentPlayer{NA},
+    SelectedDifficulty{Null},
+    TimeLimit{120},
+    GameActive{false},
+    SetStarted{false}
 {
+    controllerPublisher = n.advertise<project::ControllerMessage>("controller_message", 100);
+    mImageSub = n.subscribe("processed_image", 100, &GameController::imageCallBack, this);
 }
 
 void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
@@ -23,8 +23,28 @@ void GameController::saveBoardState(BoardState &state) {
     mState.setBoardState(state);
 }
 
-void determineCurrentPlayer(GameController::Player PreviousPlayer) {
-    // TODO: Implement Me!
+void GameController::determineCurrentPlayer() {
+    if (SetStarted) {
+        if (controllerStatus.playerId == AI) {
+            controllerStatus.playerId = OP;
+        } 
+        else if (controllerStatus.playerId == OP) {
+            controllerStatus.playerId = AI;
+        }
+        else {
+            if (SelectedDifficulty == GameController::Hard) {
+                controllerStatus.playerId = AI;;
+            }
+            else if (SelectedDifficulty == GameController::Easy) {
+                controllerStatus.playerId = OP;
+            }
+            else {
+                // TODO: Throw Exception --> Request for a difficulty level input
+            }
+        }
+    }
+    
+    GameController::controllerPublisher.publish(GameController::controllerStatus);
 }
 
 void indicateSetWinner() {
@@ -47,12 +67,21 @@ void endGame(); // announce winner and clear board and ask if user wants to play
 
 
 int main(int argc, char **argv) {
-
+    
+    std::cout << "Controller Initiating...." << std::endl;
     ros::init(argc, argv, "game_controller");
-    ros::NodeHandle n;
-
-    // Random code for testing
-    GameController c(n);
-
+    
+    std::cout << "GameController Readying...." << std::endl;
+    GameController firstGame;
+    
+    std::cout << "Game Begin!" << std::endl;
+    
+    while(ros::ok()) {
+        firstGame.determineCurrentPlayer();
+        ros::Duration(3).sleep();
+    }
+    
+    std::cout << "Game Finished!" << std::endl;
+    std::cout << "Thanks for playing!" << std::endl;
     ros::spin();
 }
