@@ -177,153 +177,56 @@ void GameController::decideMove() { // TODO: SEND RESULT TO robotClient
         if (mState.BoardEmpty()) {
             mState.addPiece(1, 1, 'x');
             mState.showBoardState();
-            b = mState.getBoard();
             return;
         }   
         
-        int bestVal = -1000;
-        int moveRow = -1;
-        int moveCol = -1;
-     
-        for (int i = 0; i<3; i++)
-        {
-            for (int j = 0; j<3; j++)
-            {
-                if (b[i][j]==' ')
-                {
-                    mState.addPieceForce(j, i, 'x');
-     
-                    int moveVal = minimax(mState, 0, false);
-     
-                    mState.addPieceForce(j, i, ' ');
-     
-                    if (moveVal > bestVal)
-                    {
-                        moveRow = i;
-                        moveCol = j;
-                        bestVal = moveVal;
-                    }
-                }
-            }
+        // Can you win now?
+        struct BoardState::point p = mState.formTriad('x');
+        if (p.row != -1 && p.col != -1) {
+            mState.addPiece(p.col, p.row, 'x');
+            mState.showBoardState();
+            return;
         }
         
-        mState.addPiece(moveCol, moveRow, 'x');
-        mState.showBoardState();
-    }
-}
-
-int GameController::assessMove(BoardState board) {
-    BoardState::Board b = board.getBoard();
-    
-    // Check rows
-    for (int row = 0; row < 3; row++) {
-        if (b[row][0] == b[row][1] && b[row][1] == b[row][2]) {
-            if (b[row][0] == 'x') // TODO: Update depending on the AI's piece
-                return 10;
-            else if (b[row][0] == 'o') 
-                return -10;
+        // Can the opponent win next?
+        p = mState.formTriad('o');
+        if (p.row != -1 && p.col != -1) {
+            mState.addPiece(p.col, p.row, 'x');
+            mState.showBoardState();
+            return;
         }
-    }
-    
-    // Check cols
-    for (int col = 0; col < 3; col++) {
-        if (b[0][col] == b[1][col] && b[1][col] == b[2][col]) {
-            if (b[0][col] == 'x') // TODO: Update depending on the AI's piece
-                return 10;
-            else if (b[0][col] == 'o') 
-                return -10;
-        }
-    }
-    
-    // Check diagonals
-    if (b[0][0]==b[1][1] && b[1][1]==b[2][2])
-    {
-        if (b[0][0] == 'x')
-            return +10;
-        else if (b[0][0] == 'o')
-            return -10;
-    }
- 
-    if (b[0][2]==b[1][1] && b[1][1]==b[2][0])
-    {
-        if (b[0][2] == 'x')
-            return +10;
-        else if (b[0][2] == 'o')
-            return -10;
-    }
-    
-    // otherwise...
-    return 0;
-}
-
-bool GameController::boardNotFull(BoardState b) {
-    BoardState::Board board = b.getBoard();
-    
-    for (int row = 0; row < 3; row++) {
-        for (int col = 0; col < 3; col++) {
-            if (board[row][col] == ' ') {
-                return true;
-            }
-        }
-    }
-    
-    return false;
-}
-
-int GameController::minimax(BoardState b, int depth, bool isMax)
-{
-    int score = assessMove(b);
-    if (score == 10)
-        return score;
         
-    if (score == -10)
-        return score;
-
-    if (boardNotFull(b) == false)
-        return 0;
-
-    BoardState::Board board = b.getBoard();
-    if (isMax)
-    {
-        int best = -1000;
- 
-        for (int i = 0; i<3; i++)
-        {
-            for (int j = 0; j<3; j++)
-            {
-                if (board[i][j]==' ')
-                {
-                    b.addPieceForce(j, i, 'x');
- 
-                    best = std::max(best, minimax(b, depth+1, !isMax));
- 
-                    // Undo the move
-                    b.addPieceForce(j, i, ' ');;
+        // Prioritise centre first, then corners, then 
+        if (b[1][1] == ' ') {
+            mState.addPiece(1, 1, 'x');
+            mState.showBoardState();
+            return;
+        } else if (b[0][0] == ' ') {
+            mState.addPiece(0, 0, 'x');
+            mState.showBoardState();
+            return;
+        } else if (b[2][2] == ' ') {
+            mState.addPiece(2, 2, 'x');
+            mState.showBoardState();
+            return;
+        } else if (b[2][0] == ' ') {
+            mState.addPiece(0, 2, 'x');
+            mState.showBoardState();
+            return;
+        } else if (b[0][2] == ' ') {
+            mState.addPiece(2, 0, 'x');
+            mState.showBoardState();
+            return;
+        }
+        
+        // otherwise pick a random one
+        for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+            for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+                if (b[row][col] == ' ') {
+                    mState.addPiece(col, row, 'x');
                 }
             }
         }
-        return best;
-    }
- 
-    else
-    {
-        int best = 1000;
- 
-        for (int i = 0; i<3; i++)
-        {
-            for (int j = 0; j<3; j++)
-            {
-                if (board[i][j]==' ')
-                {
-                    b.addPieceForce(j, i, 'o');
- 
-                    best = std::min(best, minimax(board, depth+1, !isMax));
- 
-                    b.addPieceForce(j, i, ' ');
-                }
-            }
-        }
-        return best;
     }
 }
 

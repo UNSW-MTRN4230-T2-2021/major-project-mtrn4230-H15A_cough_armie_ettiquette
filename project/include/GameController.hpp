@@ -49,10 +49,6 @@ private:
     bool SetStarted;
     Player CurrentPlayer;
     DifficultyLevel SelectedDifficulty;
-
-    int assessMove(BoardState b);
-    int minimax(BoardState b, int depth, bool isMax);
-    bool boardNotFull(BoardState b);
     
 public:
     void showBoardState() { mState.showBoardState(); }

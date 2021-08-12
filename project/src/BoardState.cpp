@@ -51,3 +51,60 @@ bool BoardState::BoardEmpty() {
     
     return true;
 }
+
+struct BoardState::point BoardState::formTriad(const char &c) {
+    struct point p;
+
+    if (triadFound() != ' ') {
+        // someone already wins
+        // TODO: DEAL WITH THIS
+    }
+    
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (mBoard[row][col] == ' ') {
+                // ITS EMPTY, CHECK IF A TRIAD CAN BE FORMED HERE
+                addPiece(col, row, c);
+                char isTriad = triadFound();
+                addPieceForce(col, row, ' ');
+                
+                if (isTriad == c) {
+                    p.row = row;
+                    p.col = col;
+                    return p;
+                }
+            }
+        }
+    }
+    
+    p.row = -1;
+    p.col = -1;
+    return p;
+}
+
+char BoardState::triadFound() {
+    // Check for all rows
+    for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+        if (mBoard[row][0] == mBoard[row][1] && mBoard[row][1] == mBoard[row][2] && mBoard[row][0] != ' ') {
+            return mBoard[row][0];
+        }
+    }
+    
+    // Check for all columns
+    for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+        if (mBoard[0][col] == mBoard[1][col] && mBoard[1][col] == mBoard[2][col] && mBoard[0][col] != ' ') {
+            return mBoard[0][col];
+        }
+    }
+    
+    // Check for diagonals
+    if (mBoard[0][0] == mBoard[1][1] && mBoard[1][1] == mBoard[2][2] && mBoard[0][0] != ' ') {
+        return mBoard[1][1];
+    }
+    
+    if (mBoard[0][2] == mBoard[1][1] && mBoard[1][1] == mBoard[2][0] && mBoard[1][1] != ' ') {
+        return mBoard[1][1];
+    }
+    
+    return ' ';
+}
