@@ -18,7 +18,7 @@
 
     <include file="$(find ur5e_epick_moveit_config)/launch/ur5e_epick_moveit_planning_execution.launch"/>
     
-    <node name="game_controller" pkg="project" type="gameController" output="screen" />
+    <!--<node name="game_controller" pkg="project" type="gameController" output="screen" />-->
     <node name="processor" pkg="project" type="imageProcessor" output="screen" />
     <node name="gazebo_controller" pkg="project" type="gazeboController" output="screen" />
 </launch>

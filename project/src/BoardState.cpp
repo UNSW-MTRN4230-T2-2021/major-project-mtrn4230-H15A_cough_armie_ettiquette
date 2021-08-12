@@ -20,6 +20,10 @@ bool BoardState::addPiece(const int &x, const int &y, const char &letter) {
     }
 }
 
+bool BoardState::addPieceForce(const int &x, const int &y, const char &letter) {
+	mBoard[y][x] = letter;
+}
+
 std::string BoardState::boardToString() {
     std::stringstream ss;
 
@@ -34,4 +38,16 @@ std::string BoardState::boardToString() {
 
 void BoardState::setBoardState(BoardState &state) {
     mBoard = state.mBoard;
+}
+
+bool BoardState::BoardEmpty() {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (mBoard[row][col] != ' ') {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }

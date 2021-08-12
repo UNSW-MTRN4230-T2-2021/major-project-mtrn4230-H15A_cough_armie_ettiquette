@@ -35,9 +35,11 @@ public:
     }
 
     bool addPiece(const int &x, const int &y, const char &letter);
+    bool addPieceForce(const int &x, const int &y, const char &letter);
     std::string boardToString();
 
     void setBoardState(BoardState &state);
     Board getBoard() { return mBoard; }
+    bool BoardEmpty();
 };
 #endif

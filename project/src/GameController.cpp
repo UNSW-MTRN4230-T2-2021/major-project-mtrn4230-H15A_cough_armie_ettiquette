@@ -9,17 +9,12 @@ GameController::GameController():
     SetStarted{false}
 {
     controllerPublisher = n.advertise<project::ControllerMessage>("controller_message", 100);
-    mImageSub = n.subscribe("processed_image", 100, &GameController::imageCallBack, this);
+    mImageSub = n.serviceClient<project::ImageRequest>("imageRequest");
+    robotClient = n.serviceClient<project::RobotMoveService>("robotMoveService");
     
     for (int i = 0; i < TOTAL_STAT; i++) {
         controllerStatus.setWinners.push_back(NA);
     }
-}
-
-
-void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
-    BoardState newBoard(msg->board);
-    newBoard.showBoardState();
 }
 
 void GameController::saveBoardState(BoardState &state) {
@@ -27,19 +22,23 @@ void GameController::saveBoardState(BoardState &state) {
 }
 
 void GameController::determineCurrentPlayer() {
-    if (SetStarted) {
+    if (GameActive) {
         if (controllerStatus.playerId == AI) {
             controllerStatus.playerId = OP;
+            CurrentPlayer = OP;
         } 
         else if (controllerStatus.playerId == OP) {
             controllerStatus.playerId = AI;
+            CurrentPlayer = AI;
         }
         else {
             if (SelectedDifficulty == GameController::Hard) {
-                controllerStatus.playerId = AI;;
+                controllerStatus.playerId = AI;
+                CurrentPlayer = AI;
             }
             else if (SelectedDifficulty == GameController::Easy) {
                 controllerStatus.playerId = OP;
+                CurrentPlayer = OP;
             }
             else {
                 // TODO: Throw Exception --> Request for a difficulty level input
@@ -52,9 +51,23 @@ void GameController::determineCurrentPlayer() {
 
 void GameController::indicateSetWinner() {
     /* TRIADS: ROWs, COLs, when row == col */
-    // TODO: double check the letters used and who the players are, then update controllerStatus.setWinners[SetCount] = OP or AI
-    
     BoardState::Board board = mState.getBoard();
+    
+    project::ImageRequest srv;
+    srv.request.service = ImageProcessor::Request::SETUP;
+    if (GameController::mImageSub.call(srv)) {
+        std::cout << "SETUP DONE" << std::endl;
+    }
+
+    srv.request.service = ImageProcessor::Request::PROCESS;
+    if (GameController::mImageSub.call(srv)) {
+        std::cout << "PROCESS DONE" << std::endl;
+        project::BoardInfo info = srv.response.info;
+        auto newBoard = BoardState(info.board);
+        newBoard.showBoardState();
+    }
+
+
     bool winnerFound = false;
     
     // Check for all rows
@@ -130,8 +143,188 @@ void GameController::determineGameWinner() {
     }
 }
 
-void decideMove() { // RETURN TYPE DEPENDS ON GAZEBO CONTROLLER
+void GameController::decideMove() { // TODO: SEND RESULT TO robotClient
+    BoardState::Board b = mState.getBoard();
+    if (SelectedDifficulty == GameController::Null) {
+        // TODO: Throw violation --> difficulty was somehow unset or unselected
+    }
+    
+    else if (SelectedDifficulty == GameController::Easy) {
+        std::vector<int> avRows; std::vector <int> avCols; int nSpaces = 0;
+        
+        for(int row = 0; row < BoardState::BOARD_SIZE; row++) {
+            for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+                if (b[row][col] == ' ') {
+                    avRows.push_back(row); 
+                    avCols.push_back(col);
+                    nSpaces++;
+                }
+            }
+        }
+        
+        if (nSpaces == 0) {
+            // TODO: Deal with a full board
+            std::cout << "FULL BOARD" << std::endl;
+        }
+        else {
+            int randomIndex = rand() % nSpaces;
+            mState.addPiece(avCols.at(randomIndex), avRows.at(randomIndex), 'x');
+            mState.showBoardState();
+        }
+    }
+    
+    else if (SelectedDifficulty == GameController::Hard) {
+        if (mState.BoardEmpty()) {
+            mState.addPiece(1, 1, 'x');
+            mState.showBoardState();
+            b = mState.getBoard();
+            return;
+        }   
+        
+        int bestVal = -1000;
+        int moveRow = -1;
+        int moveCol = -1;
+     
+        for (int i = 0; i<3; i++)
+        {
+            for (int j = 0; j<3; j++)
+            {
+                if (b[i][j]==' ')
+                {
+                    mState.addPieceForce(j, i, 'x');
+     
+                    int moveVal = minimax(mState, 0, false);
+     
+                    mState.addPieceForce(j, i, ' ');
+     
+                    if (moveVal > bestVal)
+                    {
+                        moveRow = i;
+                        moveCol = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+        
+        mState.addPiece(moveCol, moveRow, 'x');
+        mState.showBoardState();
+    }
+}
 
+int GameController::assessMove(BoardState board) {
+    BoardState::Board b = board.getBoard();
+    
+    // Check rows
+    for (int row = 0; row < 3; row++) {
+        if (b[row][0] == b[row][1] && b[row][1] == b[row][2]) {
+            if (b[row][0] == 'x') // TODO: Update depending on the AI's piece
+                return 10;
+            else if (b[row][0] == 'o') 
+                return -10;
+        }
+    }
+    
+    // Check cols
+    for (int col = 0; col < 3; col++) {
+        if (b[0][col] == b[1][col] && b[1][col] == b[2][col]) {
+            if (b[0][col] == 'x') // TODO: Update depending on the AI's piece
+                return 10;
+            else if (b[0][col] == 'o') 
+                return -10;
+        }
+    }
+    
+    // Check diagonals
+    if (b[0][0]==b[1][1] && b[1][1]==b[2][2])
+    {
+        if (b[0][0] == 'x')
+            return +10;
+        else if (b[0][0] == 'o')
+            return -10;
+    }
+ 
+    if (b[0][2]==b[1][1] && b[1][1]==b[2][0])
+    {
+        if (b[0][2] == 'x')
+            return +10;
+        else if (b[0][2] == 'o')
+            return -10;
+    }
+    
+    // otherwise...
+    return 0;
+}
+
+bool GameController::boardNotFull(BoardState b) {
+    BoardState::Board board = b.getBoard();
+    
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 3; col++) {
+            if (board[row][col] == ' ') {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+int GameController::minimax(BoardState b, int depth, bool isMax)
+{
+    int score = assessMove(b);
+    if (score == 10)
+        return score;
+        
+    if (score == -10)
+        return score;
+
+    if (boardNotFull(b) == false)
+        return 0;
+
+    BoardState::Board board = b.getBoard();
+    if (isMax)
+    {
+        int best = -1000;
+ 
+        for (int i = 0; i<3; i++)
+        {
+            for (int j = 0; j<3; j++)
+            {
+                if (board[i][j]==' ')
+                {
+                    b.addPieceForce(j, i, 'x');
+ 
+                    best = std::max(best, minimax(b, depth+1, !isMax));
+ 
+                    // Undo the move
+                    b.addPieceForce(j, i, ' ');;
+                }
+            }
+        }
+        return best;
+    }
+ 
+    else
+    {
+        int best = 1000;
+ 
+        for (int i = 0; i<3; i++)
+        {
+            for (int j = 0; j<3; j++)
+            {
+                if (board[i][j]==' ')
+                {
+                    b.addPieceForce(j, i, 'o');
+ 
+                    best = std::min(best, minimax(board, depth+1, !isMax));
+ 
+                    b.addPieceForce(j, i, ' ');
+                }
+            }
+        }
+        return best;
+    }
 }
 
 bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
@@ -142,23 +335,88 @@ void endGame(); // announce winner and clear board and ask if user wants to play
 
 
 int main(int argc, char **argv) {
-    
     std::cout << "Controller Initiating...." << std::endl;
     ros::init(argc, argv, "game_controller");
+    ros::AsyncSpinner spinner(2);
+    spinner.start();
     
     std::cout << "GameController Readying...." << std::endl;
     GameController firstGame;
     
     std::cout << "Game Begin!" << std::endl;
     
+    // Wait for user to select difficulty level
+    char level = ' ';
+    std::cout << "choose 'e' for easy, 'h' for hard, or 'r' to randomise: ";
+    std::cin.get(level);
+    std::cout << "LEVEL: " << level << std::endl;
+    if (level == 'r') {
+        if (std::rand() % 2 == 0) {
+            firstGame.setDifficultyLevel(GameController::Easy);
+            std::cout << "Playing an easy game...." << std::endl;
+        }
+        else {
+            firstGame.setDifficultyLevel(GameController::Hard);
+            std::cout << "Playing a hard game...." << std::endl;
+        }
+    }
+    else if (level == 'h') {
+        firstGame.setDifficultyLevel(GameController::Hard);
+        std::cout << "Playing a hard game...." << std::endl;
+    }
+    else if (level == 'e') {
+        firstGame.setDifficultyLevel(GameController::Easy);
+        std::cout << "Playing an easy game...." << std::endl;
+    }
+    else {
+        firstGame.setDifficultyLevel(GameController::Null);
+        
+        // TODO: Message To User --> Get Input Again --> Placeholder, this would not be a console request
+    }
+    
+    firstGame.activateGame();
+
     while(ros::ok()) {
+        // Determine whose turn
         firstGame.determineCurrentPlayer();
+        
+        // Get current players move
+        if (firstGame.getCurrentPlayer() == GameController::NA) {
+            // TODO: ERROR! --> Message to User / maybe just let user start(?)
+        }
+        else if (firstGame.getCurrentPlayer() == GameController::OP) {
+            // TODO: Request User to make a move
+            int row = 0; int col = 0;
+            std::cout << "Enter row: ";
+            std::cin >> row;
+            
+            std::cout << "Enter col: ";
+            std::cin >> col;
+            
+            firstGame.addPieceTest(row, col);
+            firstGame.showBoardState();
+        }
+        else if (firstGame.getCurrentPlayer() == GameController::AI) {
+            firstGame.decideMove();
+        }
+        
+        
+        // Check for violations after every move
+        
+        
+        
+        // Check for set winner after every move
+
+
+        // TODO: THIS IS TESTING SECTION, DELETE LATER
         firstGame.indicateSetWinner();
         firstGame.determineGameWinner();
         ros::Duration(3).sleep();
     }
     
     std::cout << "Game Finished!" << std::endl;
+
     std::cout << "Thanks for playing!" << std::endl;
-    ros::spin();
+
+    ros::waitForShutdown();
 }

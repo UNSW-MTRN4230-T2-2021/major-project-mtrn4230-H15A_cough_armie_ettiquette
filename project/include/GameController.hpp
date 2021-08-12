@@ -2,11 +2,15 @@
 #define CONTROL_H
 
 #include <ros/ros.h>
+#include <stdio.h>
 #include <cmath>
 
 #include "project/BoardInfo.h"
 #include "project/ControllerMessage.h"
 #include "project/PiecePosition.h"
+#include "project/ImageRequest.h"
+#include "ImageProcessor.hpp"
+#include "project/RobotMoveService.h"
 #include "BoardState.hpp"
 
 class GameController {
@@ -25,28 +29,41 @@ public:
     };
 
     static const int TOTAL_STAT = 3;
-    ros::NodeHandle n; /* This has to be public for each class */
+
+    /* This has to be public for each class */
+    ros::NodeHandle n; 
 
 private:
-    BoardState mState;
-    ros::Subscriber mImageSub;
-    std::array<GameController::Player, TOTAL_STAT> WinnerArray;
     project::ControllerMessage controllerStatus;
+
+    BoardState mState;
+    std::array<GameController::Player, TOTAL_STAT> WinnerArray;
+
+    ros::ServiceClient mImageSub;
+    ros::ServiceClient robotClient;
     ros::Publisher controllerPublisher;
 
     int SetCount;
-    Player CurrentPlayer;
-    DifficultyLevel SelectedDifficulty;
     int TimeLimit;
     bool GameActive;
     bool SetStarted;
+    Player CurrentPlayer;
+    DifficultyLevel SelectedDifficulty;
+
+    int assessMove(BoardState b);
+    int minimax(BoardState b, int depth, bool isMax);
+    bool boardNotFull(BoardState b);
     
 public:
     void showBoardState() { mState.showBoardState(); }
+    void setDifficultyLevel(DifficultyLevel d) { SelectedDifficulty = d; }
+    void setCurrentPlayer(Player p) { CurrentPlayer = p; }
+    void activateGame() { GameActive = true; }
+    void deactiveGame() { GameActive = false; }
+    Player getCurrentPlayer() { return CurrentPlayer; }
+    void addPieceTest(int row, int col) { mState.addPiece(col, row, 'o'); }
 
     GameController();
-
-    void imageCallBack(const project::BoardInfo::ConstPtr &msg);
 
     void saveBoardState(BoardState &state);
 
