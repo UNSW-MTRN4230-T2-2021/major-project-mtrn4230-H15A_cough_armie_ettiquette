@@ -15,16 +15,16 @@
 
 ## Secondary Window: Displays messages and sends messages back.
 ### Displays message types:
-  - Robot Power On [Receive, Topic: MessagesToUser] (Has a status number)
-  - Game Start [Receive, Topic: MessagesToUser] (Has a status number)
-  - Rule Violations [Receive, Topic: RuleViolations] (Has a range of statuses. Give this a separate topic)
-  - End Robot Turn [Receive, Topic: MessagesToUser] (Has a status number)
-  - Start User Turn [Receive, Topic: MessagesToUser] (Has a status number)
+  - Robot Power On [Receive, Topic: MessagesToUser] (int statusNumber = 0)
+  - Game Start [Receive, Topic: MessagesToUser] (int statusNumber = 1)
+  - Start Robot Turn [Receive, Topic: MessagesToUser] (int statusNumber = 2)
+  - Start User Turn [Receive, Topic: MessagesToUser] (int statusNumber = 3)
   - Robot/User Wins or Draw [Receive, Topic: MessagesToUser] (Has a status number)
   - Robot/User Wins Overall or Draw Overall [Receive, Topic: MessagesToUser] (Has a status number)
   - Start New Game Query [direct from UI] (optional)
-  - Power Off (should close all windows upon pressing OK button) [Receive, Topic: MessagesToUser OR direct from UI] (Has a status number)
+  - Power Off (should close all windows upon pressing OK button) [Receive, Topic: MessagesToUser OR direct from UI] (int statusNumber = 10)
   
+  - Rule Violations [Receive, Topic: RuleViolations] (ruleViolations: )
 ### Sends message types:
   - Start New Game AND Game Difficulty (Easy/Hard) [Send, Topic: MsgstoController] (Has two possible status numbers)
   - End User Turn [Send, Topic: MsgstoController] (Has a status number)
@@ -34,7 +34,88 @@
   
 ## Tertiary Window:
   - Displays documentation (optional: game should pause when viewing the documentation)  
-  
-## To Resolve:
-- What areas are Jo and Daniel working on that we need to synchronise with? **Daniel: Computer Vision - seeing the pieces and determining what they are. Rule Violation Check is optional.**
-  
+ 
+ 
+# Topic Codes
+**msgsToUser Topic: (int controllerStatus)**
+
+  -----------------------------------------------------------------------
+  **Information**         **Number**              **Description**
+  ----------------------- ----------------------- -----------------------
+  No Information          0                       
+
+  Robot Power On          1                       
+
+  Game Start              2                       
+
+  Start Robot Turn        3                       
+
+  Start User Turn         4                       
+
+  Robot Wins Once         10                      
+
+  Player Wins Once        11                      
+
+  Draw Happens Once       12                      
+
+  Robot Wins Overall      20                      
+
+  Player Wins Overall     21                      
+
+  Draw Overall            22                      
+  -----------------------------------------------------------------------
+
+**msgstoController Topic: (int uiStatus)**
+
+  -----------------------------------------------------------------------
+  **Information**         **Number**              **Description**
+  ----------------------- ----------------------- -----------------------
+  No Information          0                       
+
+  Start New Game: Easy    1                       
+
+  Start New Game: Hard    2                       
+
+  End User Turn           3                       Lets the controller
+                                                  know that the robot can
+                                                  now take its turn
+
+  Timer Expired           4                       Only sends when timer
+                                                  has expired
+
+  Pause Game              5                       Used when the player
+                                                  wants to take a break,
+                                                  or is reading the
+                                                  documentation.
+                                                  (optional)
+
+  Power Off               6                       Can power the robot off
+                                                  mid-game (optional)
+
+  Violation Resolved by   7                       Controller should check
+  User                                            that all violations
+                                                  actually have been
+                                                  resolved, after
+                                                  receiving this status
+                                                  number. (optional)
+  -----------------------------------------------------------------------
+
+**ruleViolation Topic: (int dataRequest, string message)**
+
+  -----------------------------------------------------------------------
+  **Information**         **Number**              **Description**
+  ----------------------- ----------------------- -----------------------
+  No Resolution of        0                       Controller is only
+  Violation Necessary                             sending information to
+                                                  the UI. No response
+                                                  needed.
+
+  User Requested to       1                       Controller needs user
+  Resolve Violation                               to resolve violation
+                                                  and then send
+                                                  confirmation of this
+                                                  back to the controller.
+  -----------------------------------------------------------------------
+
+
+
