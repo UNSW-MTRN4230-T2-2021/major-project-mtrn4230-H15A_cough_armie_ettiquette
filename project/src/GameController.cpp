@@ -9,6 +9,7 @@ GameController::GameController(ros::NodeHandle &n):
 {
 }
 
+
 void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
     BoardState newBoard(msg->board);
 
