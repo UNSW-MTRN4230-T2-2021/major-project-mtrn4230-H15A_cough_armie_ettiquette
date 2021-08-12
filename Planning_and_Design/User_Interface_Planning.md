@@ -39,83 +39,36 @@
 # Topic Codes
 **msgsToUser Topic: (int controllerStatus)**
 
-  -----------------------------------------------------------------------
-  **Information**         **Number**              **Description**
-  ----------------------- ----------------------- -----------------------
-  No Information          0                       
-
-  Robot Power On          1                       
-
-  Game Start              2                       
-
-  Start Robot Turn        3                       
-
-  Start User Turn         4                       
-
-  Robot Wins Once         10                      
-
-  Player Wins Once        11                      
-
-  Draw Happens Once       12                      
-
-  Robot Wins Overall      20                      
-
-  Player Wins Overall     21                      
-
-  Draw Overall            22                      
-  -----------------------------------------------------------------------
+| **Information**     | **Number** | **Description** |
+|---------------------|------------|-----------------|
+| No Information      | 0          |                 |
+| Robot Power On      | 1          |                 |
+| Game Start          | 2          |                 |
+| Start Robot Turn    | 3          |                 |
+| Start User Turn     | 4          |                 |
+| Robot Wins Once     | 10         |                 |
+| Player Wins Once    | 11         |                 |
+| Draw Happens Once   | 12         |                 |
+| Robot Wins Overall  | 20         |                 |
+| Player Wins Overall | 21         |                 |
+| Draw Overall        | 22         |                 |
 
 **msgstoController Topic: (int uiStatus)**
 
-  -----------------------------------------------------------------------
-  **Information**         **Number**              **Description**
-  ----------------------- ----------------------- -----------------------
-  No Information          0                       
-
-  Start New Game: Easy    1                       
-
-  Start New Game: Hard    2                       
-
-  End User Turn           3                       Lets the controller
-                                                  know that the robot can
-                                                  now take its turn
-
-  Timer Expired           4                       Only sends when timer
-                                                  has expired
-
-  Pause Game              5                       Used when the player
-                                                  wants to take a break,
-                                                  or is reading the
-                                                  documentation.
-                                                  (optional)
-
-  Power Off               6                       Can power the robot off
-                                                  mid-game (optional)
-
-  Violation Resolved by   7                       Controller should check
-  User                                            that all violations
-                                                  actually have been
-                                                  resolved, after
-                                                  receiving this status
-                                                  number. (optional)
-  -----------------------------------------------------------------------
+| **Information**            | **Number** | **Description**                                                                                                         |
+|----------------------------|------------|-------------------------------------------------------------------------------------------------------------------------|
+| No Information             | 0          |                                                                                                                         |
+| Start New Game: Easy       | 1          |                                                                                                                         |
+| Start New Game: Hard       | 2          |                                                                                                                         |
+| End User Turn              | 3          | Lets the controller know that the robot can now take its turn                                                           |
+| Timer Expired              | 4          | Only sends when timer has expired                                                                                       |
+| Pause Game                 | 5          | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
+| Power Off                  | 6          | Can power the robot off mid-game (optional)                                                                             |
+| Violation Resolved by User | 7          | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
 
 **ruleViolation Topic: (int dataRequest, string message)**
 
-  -----------------------------------------------------------------------
-  **Information**         **Number**              **Description**
-  ----------------------- ----------------------- -----------------------
-  No Resolution of        0                       Controller is only
-  Violation Necessary                             sending information to
-                                                  the UI. No response
-                                                  needed.
-
-  User Requested to       1                       Controller needs user
-  Resolve Violation                               to resolve violation
-                                                  and then send
-                                                  confirmation of this
-                                                  back to the controller.
-  -----------------------------------------------------------------------
-
-
-
+| **Information**                      | **Number** | **Description**                                                                                       |
+|--------------------------------------|------------|-------------------------------------------------------------------------------------------------------|
+| No Resolution of Violation Necessary | 0          | Controller is only sending information to the UI. No response needed.                                 |
+| User Requested to Resolve Violation  | 1          | Controller needs user to resolve violation and then send confirmation of this back to the controller. |
