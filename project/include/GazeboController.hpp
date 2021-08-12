@@ -5,7 +5,6 @@
 
 #include "project/UserMoveService.h"
 #include "project/RobotMoveService.h"
-#include "project/ObjectSpawn.h"
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
