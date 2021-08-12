@@ -63,8 +63,10 @@ find_package(OpenCV REQUIRED)
 add_message_files(
   FILES
   Point.msg
-#  PointArray.msg
+  PiecePosition.msg
   BoardInfo.msg
+  ControllerMessage.msg
+  DisplayMessage.msg
 )
 
 # Generate services in the 'srv' folder
