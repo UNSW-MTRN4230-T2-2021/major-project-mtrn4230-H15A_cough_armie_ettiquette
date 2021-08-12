@@ -16,6 +16,7 @@ GameController::GameController():
     }
 }
 
+
 void GameController::imageCallBack(const project::BoardInfo::ConstPtr &msg) {
     BoardState newBoard(msg->board);
     newBoard.showBoardState();

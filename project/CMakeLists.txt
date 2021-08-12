@@ -12,10 +12,21 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  gazebo_msgs
+  geometry_msgs
+  sensor_msgs
+  cv_bridge
+  image_transport
+  moveit_msgs
+  moveit_core
+  moveit_ros_planning
+  moveit_ros_planning_interface
+  tf2
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV REQUIRED)
 
 
 
@@ -58,10 +69,13 @@ add_message_files(
   DisplayMessage.msg
 )
 
-## Generate services in the 'srv' folder
-# add_service_files(
-#  FILES
-# )
+# Generate services in the 'srv' folder
+add_service_files(
+  FILES
+  ImageRequest.srv
+  UserMoveService.srv
+  RobotMoveService.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -74,6 +88,9 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
+  sensor_msgs
+  moveit_msgs
 )
 
 ################################################
@@ -108,7 +125,15 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES project
-  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS 
+      roscpp 
+      rospy 
+      std_msgs 
+      sensor_msgs 
+      geometry_msgs 
+      moveit_msgs
+      moveit_core
+      moveit_ros_planning_interface
 #  DEPENDS system_lib
 )
 
@@ -121,11 +146,13 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ 
 add_library(BoardState src/BoardState.cpp)
 target_link_libraries(BoardState ${catkin_LIBRARIES})
+add_dependencies(BoardState ${${PROJECT_NAME}_EXPORTED_TARGETS})
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/project.cpp
 # )
@@ -133,16 +160,33 @@ target_link_libraries(BoardState ${catkin_LIBRARIES})
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(gameController src/GameController.cpp)
 target_link_libraries(gameController ${catkin_LIBRARIES} BoardState)
+add_dependencies(gameController ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(imageProcessor src/ImageProcessor.cpp)
-target_link_libraries(imageProcessor ${catkin_LIBRARIES} BoardState)
+target_link_libraries(imageProcessor ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} BoardState)
+add_dependencies(imageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(gazeboController src/GazeboController.cpp)
+target_link_libraries(gazeboController ${catkin_LIBRARIES})
+add_dependencies(gazeboController ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(spawn_box_cpp src/spawn_box_cpp.cpp)
+target_link_libraries(spawn_box_cpp ${catkin_LIBRARIES})
+
+# TESTS
+add_executable(testImageProcessor tests/testImageProcessor.cpp)
+target_link_libraries(testImageProcessor ${catkin_LIBRARIES} BoardState)
+add_dependencies(testImageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(testGazeboBehaviour tests/testGazeboBehaviour.cpp)
+target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES})
+add_dependencies(testGazeboBehaviour ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
