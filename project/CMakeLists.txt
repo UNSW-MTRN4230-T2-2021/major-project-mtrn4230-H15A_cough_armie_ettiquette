@@ -187,7 +187,7 @@ target_link_libraries(testImageProcessor ${catkin_LIBRARIES} BoardState)
 add_dependencies(testImageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(testGazeboBehaviour tests/testGazeboBehaviour.cpp)
-target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES})
+target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES} BoardState)
 add_dependencies(testGazeboBehaviour ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
