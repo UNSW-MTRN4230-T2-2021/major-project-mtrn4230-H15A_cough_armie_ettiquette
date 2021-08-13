@@ -71,6 +71,7 @@
   <exec_depend>ur_kinematics</exec_depend>
   <exec_depend>moveit_core</exec_depend>
   <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
 
   <depend>std_srvs</depend>
   <depend>gazebo_msgs</depend>
