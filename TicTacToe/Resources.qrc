@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/menuimgs">
-        <file>images/Help.jpg</file>
-        <file>images/NewGame.png</file>
-        <file>images/PowerOff.svg</file>
-    </qresource>
-</RCC>
