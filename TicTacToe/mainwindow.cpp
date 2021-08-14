@@ -43,11 +43,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::msgsToUserCallback(const project::ControllerMessage& _controllerStatus)
+void MainWindow::msgsToUserCallback(const std_msgs::Int32& _controllerStatus)
 {
-  saveValues(_controllerStatus);
+  //saveValues(_controllerStatus);
 
-  switch(controllerStatus.playerId) {
+  switch(_controllerStatus.data) {
     case 0:  // NA
 
       break;
@@ -63,8 +63,8 @@ void MainWindow::msgsToUserCallback(const project::ControllerMessage& _controlle
   }
 
 
-  qDebug() << "playerId: " << controllerStatus.playerId;
-  qDebug() << "gameWinner: " << controllerStatus.gameWinner;
+  //qDebug() << "playerId: " << controllerStatus.playerId;
+  //qDebug() << "gameWinner: " << controllerStatus.gameWinner;
 
 }
 

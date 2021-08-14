@@ -46,8 +46,8 @@ static const std::string PLANNING_GROUP = "manipulator";
 class GazeboController {
 public:
     struct {
-        float BOARD_X = 1.41,
-        BOARD_Y = 0.135,
+        float BOARD_X = 1.3,
+        BOARD_Y = 0.1,
         BOARD_Z = 0.775,
         BOARD_WIDTH = 0.6,
         SQUARE_WIDTH = 0.12,

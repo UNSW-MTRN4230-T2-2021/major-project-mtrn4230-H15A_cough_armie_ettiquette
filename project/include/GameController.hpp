@@ -5,13 +5,17 @@
 #include <stdio.h>
 #include <cmath>
 
+#include "std_msgs/Int32.h"
 #include "project/BoardInfo.h"
 #include "project/ControllerMessage.h"
 #include "project/PiecePosition.h"
 #include "project/ImageRequest.h"
 #include "ImageProcessor.hpp"
 #include "project/RobotMoveService.h"
+#include "project/UserMoveService.h"
+#include "project/Point.h"
 #include "BoardState.hpp"
+#include "GazeboController.hpp"
 
 class GameController {
 public: 
@@ -41,12 +45,14 @@ private:
 
     ros::ServiceClient mImageSub;
     ros::ServiceClient robotClient;
+    ros::Subscriber uiSubscriber;
     ros::Publisher controllerPublisher;
 
     int SetCount;
     int TimeLimit;
     bool GameActive;
     bool SetStarted;
+    int CurrentStatusUI;
     Player CurrentPlayer;
     DifficultyLevel SelectedDifficulty;
     
@@ -58,6 +64,9 @@ public:
     void deactiveGame() { GameActive = false; }
     Player getCurrentPlayer() { return CurrentPlayer; }
     void addPieceTest(int row, int col) { mState.addPiece(col, row, 'o'); }
+    void setCurrentUI(int val) { CurrentStatusUI = val; }
+
+    void uiCallback(const std_msgs::Int32::ConstPtr& status);
 
     GameController();
 
@@ -65,6 +74,7 @@ public:
 
     void determineCurrentPlayer();
 
+    void robotPlacePiece(const int &row, const int &col, project::Point obj);
 
     void indicateSetWinner();
 
