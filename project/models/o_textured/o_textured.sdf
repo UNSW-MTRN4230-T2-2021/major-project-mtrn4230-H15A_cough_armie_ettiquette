@@ -3,11 +3,11 @@
 <sdf version="1.6">
 
 <!-- Cubes -->
-  <model name="x1">
+  <model name="o1">
     <link name="link">
       <pose>0 0 0.025 0 0 0</pose>
       <inertial>
-        <mass>0.001</mass>
+        <mass>0.010</mass>
         <inertia>
           <ixx>1.0</ixx>
           <ixy>0</ixy>

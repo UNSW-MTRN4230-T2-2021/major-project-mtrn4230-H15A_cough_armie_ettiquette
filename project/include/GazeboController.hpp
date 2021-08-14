@@ -5,7 +5,7 @@
 
 #include "project/UserMoveService.h"
 #include "project/RobotMoveService.h"
-#include "project/ObjectSpawn.h"
+#include "project/Point.h"
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
@@ -29,8 +29,10 @@
 #include <fstream>
 #include <math.h>
 
+#include <ctime>
 #include <chrono>
 #include <thread>
+#include <utility>
 
 constexpr double pi = 3.1415926535;
 
@@ -44,23 +46,21 @@ static const std::string PLANNING_GROUP = "manipulator";
 class GazeboController {
 public:
     struct {
-        float BOARD_X = 1.71,
+        float BOARD_X = 1.41,
         BOARD_Y = 0.135,
         BOARD_Z = 0.775,
         BOARD_WIDTH = 0.6,
-        GRID_WIDTH = 0.12;
+        SQUARE_WIDTH = 0.12,
+        PIECE_HEIGHT = 0.055,
+        ROBOT_X = 0.8,
+        ROBOT_Y = 0.0,
+        ROBOT_Z = 0.675;
     };
-    // enum {
-    //     BOARD_X = 1710,
-    //     BOARD_Y = 135,
-    //     BOARD_Z = 775,
-    //     BOARD_WIDTH = 600,
-    //     GRID_WIDTH = 120
-    // };
 
     enum Service {
         POWER_ON = 0,
-        SPAWN_MOVE
+        SPAWN_MOVE,
+        CLEAR_BOARD
     };
 
     enum Player {
@@ -69,21 +69,27 @@ public:
         NUM_PLAYERS
     };
 
+    static constexpr int numRobot{5};
+
 private:
     ros::NodeHandle mN;
     ros::ServiceServer mUserServer, mRobotServer;
     ros::ServiceClient mOnClient, mOffClient;
-    // ros::AsyncSpinner mSpinner;
     std::string modelPath;
-    int mPlayer, mRobot;
+    int mPlayer{0}, mRobot{1};
+    int mNumPlayer{0}, mNumRobot{0};
     moveit::planning_interface::MoveGroupInterface move_group{PLANNING_GROUP};
     const moveit::core::JointModelGroup *joint_model_group;
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     const std::string BASE_PATH{"/base_model/base_model.sdf"};
-    std::array<std::string, Player::NUM_PLAYERS> playerPaths {
+    const std::array<std::string, Player::NUM_PLAYERS> playerPaths {
         "/x_textured/x_textured.sdf",
         "/o_textured/o_textured.sdf"
+    };
+    const std::array<std::string, Player::NUM_PLAYERS> pieceNames {
+        "x",
+        "o"
     };
 
     bool robotMoveCallBack(project::RobotMoveService::Request &req,
@@ -92,9 +98,14 @@ private:
                           project::UserMoveService::Response &res);
 
     bool robotOn(const int &player);
-    geometry_msgs::Pose boardToPose(const float &x, const float &y);
+    geometry_msgs::Pose gridPositionToPose(const float &x, const float &y);
+    geometry_msgs::Pose boardToPose(const int &x, const int &y);
+    void spawnInitialPieces();
+    float distance(std::pair<int, int> p1, std::pair<int, int> p2);
 
     bool robotHome();
+
+    bool clearBoard();
 
 public:
     GazeboController(ros::NodeHandle &n);
