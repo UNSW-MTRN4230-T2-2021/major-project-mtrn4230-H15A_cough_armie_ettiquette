@@ -36,7 +36,7 @@ public:
     ~MainWindow();
     void saveValues(project::ControllerMessage controllerStatus);
     // Subscriber Callback Function
-    void msgsToUserCallback(const project::ControllerMessage& _controllerStatus);
+    void msgsToUserCallback(const std_msgs::Int32& _controllerStatus);
 
     // Getters and Setters
 

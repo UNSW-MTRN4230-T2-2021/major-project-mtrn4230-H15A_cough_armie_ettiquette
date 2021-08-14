@@ -126,7 +126,7 @@ void ImageProcessor::findRedPieces(std::vector<Piece> &points, cv::Mat &image) {
 
     cv::inRange(reverseHsvImage, redMin, redMax, redThreshold);
 
-    findBinaryPieces(points, redThreshold, 'X');
+    findBinaryPieces(points, redThreshold, 'x');
 }
 
 void ImageProcessor::findBluePieces(std::vector<Piece> &points, cv::Mat &image) {
@@ -138,7 +138,7 @@ void ImageProcessor::findBluePieces(std::vector<Piece> &points, cv::Mat &image) 
 
     cv::inRange(hsvImage, redMin, redMax, blueThreshold);
 
-    findBinaryPieces(points, blueThreshold, 'O');
+    findBinaryPieces(points, blueThreshold, 'o');
 }
 
 project::BoardInfo ImageProcessor::processImage(cv::Mat &image) {
@@ -158,10 +158,6 @@ project::BoardInfo ImageProcessor::processImage(cv::Mat &image) {
         std::cout << piece.getX() << ", " << piece.getY() << ", " << piece.getLetter() << std::endl;
         cv::circle(correctedImage, cv::Point(piece.getX(), piece.getY()), 3, cv::Scalar(0, 255, 0), -1);
     }
-
-    cv::imshow("HEHE", correctedImage);
-    cv::waitKey();
-
     return processPieces(points);
 }
 

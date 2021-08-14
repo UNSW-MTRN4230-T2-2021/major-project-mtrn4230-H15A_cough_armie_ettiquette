@@ -2,12 +2,20 @@
 #define CONTROL_H
 
 #include <ros/ros.h>
+#include <stdio.h>
 #include <cmath>
 
+#include "std_msgs/Int32.h"
 #include "project/BoardInfo.h"
 #include "project/ControllerMessage.h"
 #include "project/PiecePosition.h"
+#include "project/ImageRequest.h"
+#include "ImageProcessor.hpp"
+#include "project/RobotMoveService.h"
+#include "project/UserMoveService.h"
+#include "project/Point.h"
 #include "BoardState.hpp"
+#include "GazeboController.hpp"
 
 class GameController {
 public: 
@@ -25,33 +33,48 @@ public:
     };
 
     static const int TOTAL_STAT = 3;
-    ros::NodeHandle n; /* This has to be public for each class */
+
+    /* This has to be public for each class */
+    ros::NodeHandle n; 
 
 private:
-    BoardState mState;
-    ros::Subscriber mImageSub;
-    std::array<GameController::Player, TOTAL_STAT> WinnerArray;
     project::ControllerMessage controllerStatus;
+
+    BoardState mState;
+    std::array<GameController::Player, TOTAL_STAT> WinnerArray;
+
+    ros::ServiceClient mImageSub;
+    ros::ServiceClient robotClient;
+    ros::Subscriber uiSubscriber;
     ros::Publisher controllerPublisher;
 
     int SetCount;
-    Player CurrentPlayer;
-    DifficultyLevel SelectedDifficulty;
     int TimeLimit;
     bool GameActive;
     bool SetStarted;
+    int CurrentStatusUI;
+    Player CurrentPlayer;
+    DifficultyLevel SelectedDifficulty;
     
 public:
     void showBoardState() { mState.showBoardState(); }
+    void setDifficultyLevel(DifficultyLevel d) { SelectedDifficulty = d; }
+    void setCurrentPlayer(Player p) { CurrentPlayer = p; }
+    void activateGame() { GameActive = true; }
+    void deactiveGame() { GameActive = false; }
+    Player getCurrentPlayer() { return CurrentPlayer; }
+    void addPieceTest(int row, int col) { mState.addPiece(col, row, 'o'); }
+    void setCurrentUI(int val) { CurrentStatusUI = val; }
+
+    void uiCallback(const std_msgs::Int32::ConstPtr& status);
 
     GameController();
-
-    void imageCallBack(const project::BoardInfo::ConstPtr &msg);
 
     void saveBoardState(BoardState &state);
 
     void determineCurrentPlayer();
 
+    void robotPlacePiece(const int &row, const int &col, project::Point obj);
 
     void indicateSetWinner();
 
