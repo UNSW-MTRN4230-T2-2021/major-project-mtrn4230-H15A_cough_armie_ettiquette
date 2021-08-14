@@ -147,6 +147,8 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIR}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ 
@@ -173,7 +175,7 @@ target_link_libraries(imageProcessor ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} Boa
 add_dependencies(imageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(gazeboController src/GazeboController.cpp)
-target_link_libraries(gazeboController ${catkin_LIBRARIES})
+target_link_libraries(gazeboController ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(gazeboController ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(spawn_box_cpp src/spawn_box_cpp.cpp)
@@ -185,7 +187,7 @@ target_link_libraries(testImageProcessor ${catkin_LIBRARIES} BoardState)
 add_dependencies(testImageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(testGazeboBehaviour tests/testGazeboBehaviour.cpp)
-target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES})
+target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES} BoardState)
 add_dependencies(testGazeboBehaviour ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix

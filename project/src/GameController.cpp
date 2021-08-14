@@ -117,7 +117,6 @@ void GameController::indicateSetWinner() {
 }
 
 bool isOP(int p) { return (p == GameController::OP); }
-
 bool isAI(int p) { return (p == GameController::AI); }
 
 void GameController::determineGameWinner() {
@@ -235,7 +234,6 @@ bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME 
 void throwViolation(); // RETURN TYPE DEPENDS ON USER INTERFACE
 
 void endGame(); // announce winner and clear board and ask if user wants to play again
-
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;

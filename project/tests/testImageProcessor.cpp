@@ -1,8 +1,9 @@
 #include "ros/ros.h"
 #include "project/ImageRequest.h"
-#include "ImageProcessor.hpp"
-
 #include "project/BoardInfo.h"
+#include "project/Point.h"
+
+#include "ImageProcessor.hpp"
 #include "BoardState.hpp"
 
 
@@ -26,6 +27,10 @@ int main(int argc, char **argv) {
         project::BoardInfo info = srv.response.info;
         BoardState board{info.board};
         board.showBoardState();
+        std::cout << "Available pieces:" << std::endl;
+        for (auto &point : info.pieces) {
+            std::cout << "(" << point.x << ", " << point.y << ", " << point.letter << ")" << std::endl;
+        }
     }
     // ros::spinOnce();
 
