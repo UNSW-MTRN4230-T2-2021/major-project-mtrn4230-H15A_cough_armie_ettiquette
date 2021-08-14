@@ -2,7 +2,7 @@
 #define BSTATE_H
 
 #include <ros/ros.h>
-
+#include <tuple>
 #include <string>
 #include <array>
 #include <sstream>
@@ -14,6 +14,11 @@ public:
     };
 
     typedef std::array<std::array<char, BOARD_SIZE>, BOARD_SIZE> Board;
+
+    struct point {
+        int row;
+        int col;
+    };
 
 private:
     Board mBoard;
@@ -35,9 +40,14 @@ public:
     }
 
     bool addPiece(const int &x, const int &y, const char &letter);
+    bool addPieceForce(const int &x, const int &y, const char &letter);
     std::string boardToString();
+
+    struct point formTriad(const char &c);
+    char triadFound();
 
     void setBoardState(BoardState &state);
     Board getBoard() { return mBoard; }
+    bool BoardEmpty();
 };
 #endif
