@@ -58,13 +58,22 @@
 | **Information**            | **Number** | **Description**                                                                                                         |
 |----------------------------|------------|-------------------------------------------------------------------------------------------------------------------------|
 | No Information             | 0          |                                                                                                                         |
-| Start New Game: Easy       | 1          |                                                                                                                         |
-| Start New Game: Hard       | 2          |                                                                                                                         |
-| End User Turn              | 3          | Lets the controller know that the robot can now take its turn                                                           |
-| Timer Expired              | 4          | Only sends when timer has expired                                                                                       |
-| Pause Game                 | 5          | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
-| Power Off                  | 6          | Can power the robot off mid-game (optional)                                                                             |
-| Violation Resolved by User | 7          | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
+| Place Piece in Position 1  | 1          | Send to the controller row: 0 and col: 0 after user ends their turn                                                     |
+| Place Piece in Position 2  | 2          | Send to the controller row: 0 and col: 1 after user ends their turn                                                     |
+| Place Piece in Position 3  | 3          | Send to the controller row: 0 and col: 2 after user ends their turn                                                     |
+| Place Piece in Position 4  | 4          | Send to the controller row: 1 and col: 0 after user ends their turn                                                     |
+| Place Piece in Position 5  | 5          | Send to the controller row: 1 and col: 1 after user ends their turn                                                     |
+| Place Piece in Position 6  | 6          | Send to the controller row: 1 and col: 2 after user ends their turn                                                     |
+| Place Piece in Position 7  | 7          | Send to the controller row: 2 and col: 0 after user ends their turn                                                     |
+| Place Piece in Position 8  | 8          | Send to the controller row: 2 and col: 1 after user ends their turn                                                     |
+| Place Piece in Position 9  | 9          | Send to the controller row: 2 and col: 2 after user ends their turn                                                     |
+| Start New Game: Easy       | 10         |                                                                                                                         |
+| Start New Game: Hard       | 11         |                                                                                                                         |
+| End User Turn              | 12         | Lets the controller know that the robot can now take its turn                                                           |
+| Timer Expired              | 13         | Only sends when timer has expired                                                                                       |
+| Pause Game                 | 14         | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
+| Power Off                  | 15         | Can power the robot off mid-game (optional)                                                                             |
+| Violation Resolved by User | 16         | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
 
 **ruleViolation Topic: (int dataRequest, string message)**
 

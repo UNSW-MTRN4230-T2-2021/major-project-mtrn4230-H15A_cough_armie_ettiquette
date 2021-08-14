@@ -62,7 +62,6 @@ void MainWindow::msgsToUserCallback(const std_msgs::Int32& _controllerStatus)
       break;
   }
 
-
   //qDebug() << "playerId: " << controllerStatus.playerId;
   //qDebug() << "gameWinner: " << controllerStatus.gameWinner;
 
