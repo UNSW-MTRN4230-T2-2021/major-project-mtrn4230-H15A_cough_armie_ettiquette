@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QDebug>
+#include <QMainWindow>
 
 namespace Ui {
 class MainWindow;
