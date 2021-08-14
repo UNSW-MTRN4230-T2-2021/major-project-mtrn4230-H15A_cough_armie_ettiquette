@@ -51,9 +51,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.cpp \
-		mainwindow.cpp moc_mainwindow.cpp
+		mainwindow.cpp qrc_Resources.cpp \
+		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
+		qrc_Resources.o \
 		moc_mainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -124,6 +126,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -225,6 +228,7 @@ Makefile: TicTacToe.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.co
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -245,6 +249,7 @@ Makefile: TicTacToe.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.co
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		TicTacToe.pro \
+		Resources.qrc \
 		/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl \
 		/usr/lib/x86_64-linux-gnu/libQt5Gui.prl \
 		/usr/lib/x86_64-linux-gnu/libQt5Core.prl
@@ -318,6 +323,7 @@ Makefile: TicTacToe.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.co
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -338,6 +344,7 @@ Makefile: TicTacToe.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.co
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf:
 TicTacToe.pro:
+Resources.qrc:
 /usr/lib/x86_64-linux-gnu/libQt5Widgets.prl:
 /usr/lib/x86_64-linux-gnu/libQt5Gui.prl:
 /usr/lib/x86_64-linux-gnu/libQt5Core.prl:
@@ -355,6 +362,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents Resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.h $(DISTDIR)/
 	$(COPY_FILE) --parents main.cpp mainwindow.cpp $(DISTDIR)/
@@ -382,8 +390,16 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_Resources.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_Resources.cpp
+qrc_Resources.cpp: Resources.qrc \
+		/usr/lib/qt5/bin/rcc \
+		images/Help.jpg \
+		images/PowerOff.svg \
+		images/NewGame.png
+	/usr/lib/qt5/bin/rcc -name Resources Resources.qrc -o qrc_Resources.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -393,31 +409,7 @@ moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 compiler_moc_header_make_all: moc_mainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_mainwindow.cpp
-moc_mainwindow.cpp: mainwindow.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/mtrn4230/TicTacToe -I/opt/ros/melodic/include -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
-
-compiler_moc_source_make_all:
-compiler_moc_source_clean:
-compiler_uic_make_all: ui_mainwindow.h
-compiler_uic_clean:
-	-$(DEL_FILE) ui_mainwindow.h
-ui_mainwindow.h: mainwindow.ui \
-		/usr/lib/qt5/bin/uic
-	/usr/lib/qt5/bin/uic mainwindow.ui -o ui_mainwindow.h
-
-compiler_yacc_decl_make_all:
-compiler_yacc_decl_clean:
-compiler_yacc_impl_make_all:
-compiler_yacc_impl_clean:
-compiler_lex_make_all:
-compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
-
-####### Compile
-
-main.o: main.cpp /opt/ros/melodic/include/ros/ros.h \
+moc_mainwindow.cpp: /opt/ros/melodic/include/ros/ros.h \
 		/opt/ros/melodic/include/ros/time.h \
 		/opt/ros/melodic/include/ros/platform.h \
 		/opt/ros/melodic/include/ros/exception.h \
@@ -474,14 +466,162 @@ main.o: main.cpp /opt/ros/melodic/include/ros/ros.h \
 		/opt/ros/melodic/include/ros/this_node.h \
 		/opt/ros/melodic/include/ros/param.h \
 		/opt/ros/melodic/include/ros/topic.h \
-		/opt/ros/melodic/include/std_msgs/String.h \
+		/opt/ros/melodic/include/std_msgs/Int32.h \
 		/opt/ros/melodic/include/ros/message_operations.h \
-		mainwindow.h
+		lib/ControllerMessage.h \
+		mainwindow.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/mtrn4230/TicTacToe -I/opt/ros/melodic/include -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+
+compiler_moc_source_make_all:
+compiler_moc_source_clean:
+compiler_uic_make_all: ui_mainwindow.h
+compiler_uic_clean:
+	-$(DEL_FILE) ui_mainwindow.h
+ui_mainwindow.h: mainwindow.ui \
+		/usr/lib/qt5/bin/uic
+	/usr/lib/qt5/bin/uic mainwindow.ui -o ui_mainwindow.h
+
+compiler_yacc_decl_make_all:
+compiler_yacc_decl_clean:
+compiler_yacc_impl_make_all:
+compiler_yacc_impl_clean:
+compiler_lex_make_all:
+compiler_lex_clean:
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+
+####### Compile
+
+main.o: main.cpp mainwindow.h \
+		/opt/ros/melodic/include/ros/ros.h \
+		/opt/ros/melodic/include/ros/time.h \
+		/opt/ros/melodic/include/ros/platform.h \
+		/opt/ros/melodic/include/ros/exception.h \
+		/opt/ros/melodic/include/ros/duration.h \
+		/opt/ros/melodic/include/ros/rostime_decl.h \
+		/opt/ros/melodic/include/ros/macros.h \
+		/opt/ros/melodic/include/ros/rate.h \
+		/opt/ros/melodic/include/ros/console.h \
+		/opt/ros/melodic/include/ros/console_backend.h \
+		/opt/ros/melodic/include/rosconsole/macros_generated.h \
+		/opt/ros/melodic/include/ros/assert.h \
+		/opt/ros/melodic/include/ros/static_assert.h \
+		/opt/ros/melodic/include/ros/common.h \
+		/opt/ros/melodic/include/ros/forwards.h \
+		/opt/ros/melodic/include/ros/exceptions.h \
+		/opt/ros/melodic/include/ros/datatypes.h \
+		/opt/ros/melodic/include/ros/serialized_message.h \
+		/opt/ros/melodic/include/ros/roscpp_serialization_macros.h \
+		/opt/ros/melodic/include/ros/types.h \
+		/opt/ros/melodic/include/ros/node_handle.h \
+		/opt/ros/melodic/include/ros/publisher.h \
+		/opt/ros/melodic/include/ros/message.h \
+		/opt/ros/melodic/include/ros/serialization.h \
+		/opt/ros/melodic/include/ros/message_traits.h \
+		/opt/ros/melodic/include/ros/message_forward.h \
+		/opt/ros/melodic/include/ros/builtin_message_traits.h \
+		/opt/ros/melodic/include/ros/subscriber.h \
+		/opt/ros/melodic/include/ros/subscription_callback_helper.h \
+		/opt/ros/melodic/include/ros/parameter_adapter.h \
+		/opt/ros/melodic/include/ros/message_event.h \
+		/opt/ros/melodic/include/ros/service_server.h \
+		/opt/ros/melodic/include/ros/service_client.h \
+		/opt/ros/melodic/include/ros/service_traits.h \
+		/opt/ros/melodic/include/ros/timer.h \
+		/opt/ros/melodic/include/ros/timer_options.h \
+		/opt/ros/melodic/include/ros/wall_timer.h \
+		/opt/ros/melodic/include/ros/wall_timer_options.h \
+		/opt/ros/melodic/include/ros/steady_timer.h \
+		/opt/ros/melodic/include/ros/steady_timer_options.h \
+		/opt/ros/melodic/include/ros/advertise_options.h \
+		/opt/ros/melodic/include/ros/advertise_service_options.h \
+		/opt/ros/melodic/include/ros/service_callback_helper.h \
+		/opt/ros/melodic/include/ros/subscribe_options.h \
+		/opt/ros/melodic/include/ros/transport_hints.h \
+		/opt/ros/melodic/include/ros/service_client_options.h \
+		/opt/ros/melodic/include/ros/spinner.h \
+		/opt/ros/melodic/include/ros/init.h \
+		/opt/ros/melodic/include/xmlrpcpp/XmlRpcValue.h \
+		/opt/ros/melodic/include/xmlrpcpp/XmlRpcDecl.h \
+		/opt/ros/melodic/include/ros/single_subscriber_publisher.h \
+		/opt/ros/melodic/include/ros/service.h \
+		/opt/ros/melodic/include/ros/names.h \
+		/opt/ros/melodic/include/ros/master.h \
+		/opt/ros/melodic/include/ros/this_node.h \
+		/opt/ros/melodic/include/ros/param.h \
+		/opt/ros/melodic/include/ros/topic.h \
+		/opt/ros/melodic/include/std_msgs/Int32.h \
+		/opt/ros/melodic/include/ros/message_operations.h \
+		lib/ControllerMessage.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 mainwindow.o: mainwindow.cpp mainwindow.h \
+		/opt/ros/melodic/include/ros/ros.h \
+		/opt/ros/melodic/include/ros/time.h \
+		/opt/ros/melodic/include/ros/platform.h \
+		/opt/ros/melodic/include/ros/exception.h \
+		/opt/ros/melodic/include/ros/duration.h \
+		/opt/ros/melodic/include/ros/rostime_decl.h \
+		/opt/ros/melodic/include/ros/macros.h \
+		/opt/ros/melodic/include/ros/rate.h \
+		/opt/ros/melodic/include/ros/console.h \
+		/opt/ros/melodic/include/ros/console_backend.h \
+		/opt/ros/melodic/include/rosconsole/macros_generated.h \
+		/opt/ros/melodic/include/ros/assert.h \
+		/opt/ros/melodic/include/ros/static_assert.h \
+		/opt/ros/melodic/include/ros/common.h \
+		/opt/ros/melodic/include/ros/forwards.h \
+		/opt/ros/melodic/include/ros/exceptions.h \
+		/opt/ros/melodic/include/ros/datatypes.h \
+		/opt/ros/melodic/include/ros/serialized_message.h \
+		/opt/ros/melodic/include/ros/roscpp_serialization_macros.h \
+		/opt/ros/melodic/include/ros/types.h \
+		/opt/ros/melodic/include/ros/node_handle.h \
+		/opt/ros/melodic/include/ros/publisher.h \
+		/opt/ros/melodic/include/ros/message.h \
+		/opt/ros/melodic/include/ros/serialization.h \
+		/opt/ros/melodic/include/ros/message_traits.h \
+		/opt/ros/melodic/include/ros/message_forward.h \
+		/opt/ros/melodic/include/ros/builtin_message_traits.h \
+		/opt/ros/melodic/include/ros/subscriber.h \
+		/opt/ros/melodic/include/ros/subscription_callback_helper.h \
+		/opt/ros/melodic/include/ros/parameter_adapter.h \
+		/opt/ros/melodic/include/ros/message_event.h \
+		/opt/ros/melodic/include/ros/service_server.h \
+		/opt/ros/melodic/include/ros/service_client.h \
+		/opt/ros/melodic/include/ros/service_traits.h \
+		/opt/ros/melodic/include/ros/timer.h \
+		/opt/ros/melodic/include/ros/timer_options.h \
+		/opt/ros/melodic/include/ros/wall_timer.h \
+		/opt/ros/melodic/include/ros/wall_timer_options.h \
+		/opt/ros/melodic/include/ros/steady_timer.h \
+		/opt/ros/melodic/include/ros/steady_timer_options.h \
+		/opt/ros/melodic/include/ros/advertise_options.h \
+		/opt/ros/melodic/include/ros/advertise_service_options.h \
+		/opt/ros/melodic/include/ros/service_callback_helper.h \
+		/opt/ros/melodic/include/ros/subscribe_options.h \
+		/opt/ros/melodic/include/ros/transport_hints.h \
+		/opt/ros/melodic/include/ros/service_client_options.h \
+		/opt/ros/melodic/include/ros/spinner.h \
+		/opt/ros/melodic/include/ros/init.h \
+		/opt/ros/melodic/include/xmlrpcpp/XmlRpcValue.h \
+		/opt/ros/melodic/include/xmlrpcpp/XmlRpcDecl.h \
+		/opt/ros/melodic/include/ros/single_subscriber_publisher.h \
+		/opt/ros/melodic/include/ros/service.h \
+		/opt/ros/melodic/include/ros/names.h \
+		/opt/ros/melodic/include/ros/master.h \
+		/opt/ros/melodic/include/ros/this_node.h \
+		/opt/ros/melodic/include/ros/param.h \
+		/opt/ros/melodic/include/ros/topic.h \
+		/opt/ros/melodic/include/std_msgs/Int32.h \
+		/opt/ros/melodic/include/ros/message_operations.h \
+		lib/ControllerMessage.h \
 		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
+
+qrc_Resources.o: qrc_Resources.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_Resources.o qrc_Resources.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
