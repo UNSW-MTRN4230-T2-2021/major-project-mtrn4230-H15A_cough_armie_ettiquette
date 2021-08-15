@@ -53,6 +53,8 @@ private:
     bool GameActive;
     bool SetStarted;
     int CurrentStatusUI;
+    int CurrentMove; // number from 1-9, if this is -1 then no move was found
+
     Player CurrentPlayer;
     DifficultyLevel SelectedDifficulty;
     

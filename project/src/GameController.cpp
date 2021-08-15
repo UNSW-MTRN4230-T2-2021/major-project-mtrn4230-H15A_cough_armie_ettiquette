@@ -347,12 +347,8 @@ int main(int argc, char **argv) {
             firstGame.decideMove();
         }
         
-        // Check for violations after every move
-        
-        
-        
         // Check for set winner after every move
-
+	
 
         // TODO: THIS IS TESTING SECTION, DELETE LATER
         firstGame.indicateSetWinner();
