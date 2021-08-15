@@ -4,6 +4,10 @@
 #
 #-------------------------------------------------
 
+#
+# PROJECT SYMLINKED IN MAJORPROJECT
+#
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -25,13 +29,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        docwindow.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        docwindow.h \
         mainwindow.h
 
 FORMS += \
+    docwindow.ui \
     mainwindow.ui
 
 

@@ -69,11 +69,10 @@
 | Place Piece in Position 9  | 9          | Send to the controller row: 2 and col: 2 after user ends their turn                                                     |
 | Start New Game: Easy       | 10         |                                                                                                                         |
 | Start New Game: Hard       | 11         |                                                                                                                         |
-| End User Turn              | 12         | Lets the controller know that the robot can now take its turn                                                           |
-| Timer Expired              | 13         | Only sends when timer has expired                                                                                       |
-| Pause Game                 | 14         | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
-| Power Off                  | 15         | Can power the robot off mid-game (optional)                                                                             |
-| Violation Resolved by User | 16         | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
+| Timer Expired              | 12         | Only sends when timer has expired                                                                                       |
+| Pause Game                 | 13         | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
+| Power Off                  | 14         | Can power the robot off mid-game (optional)                                                                             |
+| Violation Resolved by User | 15         | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
 
 **ruleViolation Topic: (int dataRequest, string message)**
 
