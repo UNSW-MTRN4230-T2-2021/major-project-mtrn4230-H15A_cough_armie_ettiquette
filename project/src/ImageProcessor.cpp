@@ -5,9 +5,6 @@ ImageProcessor::ImageProcessor(ros::NodeHandle &n):
     mIt{n},
     mGameRequest{n.advertiseService("imageRequest", &ImageProcessor::imageRequestCallBack, this)} {
     mImageSub = mIt.subscribe("camera/image_raw", 1, &ImageProcessor::processImageCallBack, this);
-
-    // Temporary
-    cv::namedWindow("HEHE");
 }
 
 void ImageProcessor::processImageCallBack(const sensor_msgs::ImageConstPtr &msg) {
