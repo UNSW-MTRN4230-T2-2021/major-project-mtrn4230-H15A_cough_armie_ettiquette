@@ -83,8 +83,7 @@ void MainWindow::msgsToUserCallback(const std_msgs::Int32& _msgRcv)
          qDebug() << "Warning: statusNumber = " << msgRcv.data;
          break;
   }
-
-}
+  
 /*--------------
  TIMER FUNCTIONS
 ---------------*/
