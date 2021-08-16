@@ -54,16 +54,24 @@ public:
     
     enum StatusController {
         NO_CONTROLLER_INFO = 0,
-        ROBOT_READY = 1,
-        GAME_STARTED = 2,
-        ROBOT_TURN = 3,
-        PLAYER_TURN = 4,
-        ROBOT_WIN_SET = 10,
-        PLAYER_WIN_SET = 11,
-        DRAW_SET = 12,
-        ROBOT_WIN_GAME = 20,
-        PLAYER_WIN_GAME = 21,
-        DRAW_GAME = 22
+        P_1 = 1,
+        P_2 = 2,
+        P_3 = 3, 
+        P_4 = 4, 
+        P_5 = 5,
+        P_6 = 6,
+        P_7 = 7,
+        P_8 = 8,
+        P_9 = 9,
+        ROBOT_READY = 10,
+        GAME_STARTED = 11,
+        PLAYER_TURN = 12,
+        ROBOT_WIN_SET = 13,
+        PLAYER_WIN_SET = 14,
+        DRAW_SET = 15,
+        ROBOT_WIN_GAME = 16,
+        PLAYER_WIN_GAME = 17,
+        DRAW_GAME = 18
     };
 
     static const int TOTAL_STAT = 3;
@@ -104,6 +112,7 @@ public:
     void addPieceTest(int row, int col) { mState.addPiece(col, row, 'o'); }
     void setCurrentUI(int val) { CurrentStatusUI = val; }
     int getCurrentStatusUI() { return CurrentStatusUI; }
+    void makeMove(const int &row, const int &col, project::Point obj);
 
     void uiCallback(const std_msgs::Int32::ConstPtr& status);
     GameController();

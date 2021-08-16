@@ -311,63 +311,45 @@ void GameController::decideMove() {
         }
         else {
             int randomIndex = rand() % nSpaces;
-            robotPlacePiece(avRows.at(randomIndex), avCols.at(randomIndex), point);
-            mState.addPiece(avCols.at(randomIndex), avRows.at(randomIndex), 'x');
-            mState.showBoardState();
+            makeMove(avRows.at(randomIndex), avCols.at(randomIndex), point);
         }
     }
     
     else if (SelectedDifficulty == GameController::Hard) {
         if (mState.BoardEmpty()) {
-            mState.addPiece(1, 1, 'x');
-            robotPlacePiece(1, 1, point);;
-            mState.showBoardState();
+            makeMove(1, 1, point);
             return;
         }   
         
         // Can you win now?
         struct BoardState::point p = mState.formTriad('x');
         if (p.row != -1 && p.col != -1) {
-            mState.addPiece(p.col, p.row, 'x');
-            robotPlacePiece(p.row, p.col, point);
-            mState.showBoardState();
+            makeMove(p.row, p.col, point);
             return;
         }
         
         // Can the opponent win next?
         p = mState.formTriad('o');
         if (p.row != -1 && p.col != -1) {
-            mState.addPiece(p.col, p.row, 'x');
-            robotPlacePiece(p.row, p.col, point);
-            mState.showBoardState();
+            makeMove(p.row, p.col, point);
             return;
         }
         
         // Prioritise centre first, then corners, then 
         if (b[1][1] == ' ') {
-            mState.addPiece(1, 1, 'x');
-            robotPlacePiece(1, 1, point);
-            mState.showBoardState();
+            makeMove(1, 1, point);
             return;
         } else if (b[0][0] == ' ') {
-            mState.addPiece(0, 0, 'x');
-            robotPlacePiece(0, 0, point);
-            mState.showBoardState();
+            makeMove(0, 0, point);
             return;
         } else if (b[2][2] == ' ') {
-            mState.addPiece(2, 2, 'x');
-            robotPlacePiece(2, 2, point);
-            mState.showBoardState();
+            makeMove(2, 2, point);
             return;
         } else if (b[2][0] == ' ') {
-            mState.addPiece(0, 2, 'x');
-            robotPlacePiece(2, 0, point);
-            mState.showBoardState();
+            makeMove(2, 0, point);
             return;
         } else if (b[0][2] == ' ') {
-            mState.addPiece(2, 0, 'x');
-            robotPlacePiece(0, 2, point);
-            mState.showBoardState();
+            makeMove(0, 2, point);
             return;
         }
         
@@ -375,13 +357,20 @@ void GameController::decideMove() {
         for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
             for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
                 if (b[row][col] == ' ') {
-                    mState.addPiece(2, 0, 'x');
-                    robotPlacePiece(row, col, point);
-                    mState.showBoardState();
+                    makeMove(row, col, point);
                 }
             }
         }
     }
+}
+
+void GameController::makeMove(const int &row, const int &col, project::Point obj) {
+    mState.addPiece(col, row, 'x');
+    robotPlacePiece(row, col, obj);
+    mState.showBoardState();
+    StatusController position = static_cast<StatusController>(row*col+1);
+    
+    publishToUI(position);
 }
 
 void GameController::robotPlacePiece(const int &row, const int &col, project::Point obj) {
