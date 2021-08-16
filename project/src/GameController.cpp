@@ -43,6 +43,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // CHECK IF ANYONE HAS WON THE ENTIRE GAME
         if (setWon) {
             SetCount++;
+            clearBoard();
             if (determineGameWinner()) {
                 endGame();
             };
@@ -63,6 +64,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // CHECK IF ANYONE HAS WON THE ENTIRE GAME
         if (setWon) {
             SetCount++;
+            clearBoard();
             if (determineGameWinner()) {
                 endGame();
             };
@@ -86,9 +88,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         }
         
     } else if (CurrentStatusUI == PAUSE_GAME) {
-        
+        GameActive = false;
     } else if (CurrentStatusUI == UNPAUSE_GAME) {
-        
+        GameActive = true;
     } else if (CurrentStatusUI == POWER_OFF) { 
         
     } else if (CurrentStatusUI == VIOLATION_RESOLVED) {
