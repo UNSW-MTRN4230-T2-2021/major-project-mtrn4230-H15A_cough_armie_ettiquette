@@ -98,7 +98,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         CurrentMove = 0;
         
-    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD) {
+    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD && GameActive) {
         startGame();
         CurrentStatusUI = 0;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -491,6 +491,7 @@ bool GameController::validateMove(BoardState &currentInput) {
     }
 
     return true;
+}
 
 void GameController::endGame() {
     GameActive = false;
