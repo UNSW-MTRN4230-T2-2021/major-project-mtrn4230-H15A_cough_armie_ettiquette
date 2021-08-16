@@ -26,7 +26,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     if (CurrentStatusUI == NO_UI_INFO) {
         // DO NOTHING!
         
-    } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9) {
+    } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9 && GameActive) {
         // RECORD OPPONENT MOVE
         CurrentMove = CurrentStatusUI - 1; // change input to 0 - 8
         int row = CurrentMove / BoardState::BOARD_SIZE;
@@ -44,8 +44,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // CHECK IF ANYONE HAS WON THE ENTIRE GAME
         if (setWon) {
             SetCount++;
+            clearBoard();
             if (determineGameWinner()) {
-                GameActive = false;
+                endGame();
             };
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
@@ -64,8 +65,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // CHECK IF ANYONE HAS WON THE ENTIRE GAME
         if (setWon) {
             SetCount++;
+            clearBoard();
             if (determineGameWinner()) {
-                GameActive = false;
+                endGame();
             };
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
@@ -73,8 +75,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // SET CURRENTPLAYER
         determineCurrentPlayer();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        CurrentMove = 0;
         
-    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD) {
+    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD && GameActive) {
         startGame();
         CurrentStatusUI = 0;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -86,9 +89,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         }
         
     } else if (CurrentStatusUI == PAUSE_GAME) {
-        
+        GameActive = false;
     } else if (CurrentStatusUI == UNPAUSE_GAME) {
-        
+        GameActive = true;
     } else if (CurrentStatusUI == POWER_OFF) { 
         
     } else if (CurrentStatusUI == VIOLATION_RESOLVED) {
@@ -449,7 +452,14 @@ bool GameController::validateMove(BoardState &currentInput) {
 
     return true;
 
-} // INCLUDES CHECKING FOR TIME AND 
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 
 int main(int argc, char **argv) {
@@ -463,40 +473,7 @@ int main(int argc, char **argv) {
     
     std::cout << "Game Begin!" << std::endl;
 
-    while(ros::ok()) {
-        // Determine whose turn
-        /*firstGame.determineCurrentPlayer();
-        
-        // Get current players move
-        if (firstGame.getCurrentPlayer() == GameController::NA) {
-            // TODO: ERROR! --> Message to User / maybe just let user start(?)
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::OP) {
-            // TODO: Request User to make a move
-            int row = 0; int col = 0;
-            std::cout << "Enter row: ";
-            std::cin >> row;
-            
-            std::cout << "Enter col: ";
-            std::cin >> col;
-            
-            firstGame.addPieceTest(row, col);
-            firstGame.showBoardState();
-            
-            firstGame.userPlacePiece(row, col);
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::AI) {
-            firstGame.decideMove();
-        }
-        
-        // Check for set winner after every move
-	
-
-        // TODO: THIS IS TESTING SECTION, DELETE LATER
-        firstGame.indicateSetWinner();
-        firstGame.determineGameWinner();
-        ros::Duration(3).sleep();*/
-    }
+    while(ros::ok()) { }
     
     std::cout << "Game Finished!" << std::endl;
 

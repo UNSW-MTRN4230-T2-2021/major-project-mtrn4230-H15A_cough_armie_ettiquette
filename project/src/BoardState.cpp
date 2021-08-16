@@ -52,6 +52,13 @@ bool BoardState::BoardEmpty() {
     return true;
 }
 
+void BoardState::emptyBoard() {
+    Board board = {{{' ', ' ', ' '},
+                   {' ', ' ', ' '},
+                   {' ', ' ', ' '}}};
+    mBoard = board;
+}
+
 struct BoardState::point BoardState::formTriad(const char &c) {
     struct point p;
 
