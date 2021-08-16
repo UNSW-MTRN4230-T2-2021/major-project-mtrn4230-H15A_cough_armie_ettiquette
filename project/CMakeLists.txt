@@ -74,6 +74,7 @@ add_service_files(
   FILES
   ImageRequest.srv
   UserMoveService.srv
+  TestViolation.srv
   RobotMoveService.srv
 )
 
@@ -189,6 +190,10 @@ add_dependencies(testImageProcessor ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_executable(testGazeboBehaviour tests/testGazeboBehaviour.cpp)
 target_link_libraries(testGazeboBehaviour ${catkin_LIBRARIES} BoardState)
 add_dependencies(testGazeboBehaviour ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(testViolations tests/testViolations.cpp)
+target_link_libraries(testViolations ${catkin_LIBRARIES} BoardState)
+add_dependencies(testViolations ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

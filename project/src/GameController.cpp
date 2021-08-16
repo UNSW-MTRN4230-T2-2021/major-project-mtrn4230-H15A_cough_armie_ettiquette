@@ -11,6 +11,7 @@ GameController::GameController():
     CameraClient = n.serviceClient<project::ImageRequest>("imageRequest");
     robotClient = n.serviceClient<project::RobotMoveService>("robotMoveService");
     userClient = n.serviceClient<project::UserMoveService>("userMoveService");
+    testServer = n.advertiseService("testViolation", &GameController::testViolationCallBack, this);
     uiSubscriber = n.subscribe("msgsToController", 1000, &GameController::uiCallback, this);
     
     for (int i = 0; i < TOTAL_STAT; i++) {
@@ -98,6 +99,15 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     } else {
         // DO NOTHING!
     }
+}
+
+bool GameController::testViolationCallBack(project::TestViolation::Request &req,
+                                           project::TestViolation::Response &res) {
+    BoardState b{req.curr};
+    BoardState next{req.next};
+    saveBoardState(b);
+
+    return validateMove(next);
 }
 
 void GameController::publishToUI(StatusController status) {
@@ -402,6 +412,8 @@ void GameController::startRobot() {
     project::UserMoveService userSrv;
     userSrv.request.service = GazeboController::Service::POWER_ON;
     userSrv.request.player = GazeboController::Player::O;
+
+    setPlayerPiece('o');
     
     userClient.call(userSrv);
 }
@@ -413,7 +425,32 @@ void GameController::clearBoard() {
     userClient.call(userSrv);
 }
 
-bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
+bool GameController::validateMove(BoardState &currentInput) {
+    BoardState::Board curr{mState.getBoard()};
+    BoardState::Board next{currentInput.getBoard()};
+    int totalNewPieces{0};
+
+    for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+        for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+            if (curr[row][col] != next[row][col]) {
+                if (curr[row][col] != ' ') {
+                    ROS_ERROR("Board Error: Invalid Change in Board State");
+                    return false;
+                } else if (next[row][col] != playerPiece) {
+                    ROS_ERROR("Board Error: Wrong piece placed on board");
+                    return false;
+                } else {
+                    totalNewPieces++;
+                }
+            }
+        }
+    }
+    if (totalNewPieces != 1) {
+        ROS_ERROR("Wrong number of pieces placed on the board");
+        return false;
+    }
+
+    return true;
 
 void GameController::endGame() {
     GameActive = false;
@@ -423,6 +460,7 @@ void GameController::endGame() {
     CurrentPlayer = NA;
     CurrentMove = 0;
 }
+
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
