@@ -74,6 +74,7 @@ add_service_files(
   FILES
   ImageRequest.srv
   UserMoveService.srv
+  TestViolation.srv
   RobotMoveService.srv
 )
 

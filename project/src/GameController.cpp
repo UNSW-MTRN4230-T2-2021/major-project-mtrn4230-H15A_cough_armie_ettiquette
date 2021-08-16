@@ -11,6 +11,7 @@ GameController::GameController():
     CameraClient = n.serviceClient<project::ImageRequest>("imageRequest");
     robotClient = n.serviceClient<project::RobotMoveService>("robotMoveService");
     userClient = n.serviceClient<project::UserMoveService>("userMoveService");
+    testServer = n.advertiseService("testViolation", &GameController::testViolationCallBack, this);
     uiSubscriber = n.subscribe("msgsToController", 1000, &GameController::uiCallback, this);
     
     for (int i = 0; i < TOTAL_STAT; i++) {
@@ -95,6 +96,15 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     } else {
         // DO NOTHING!
     }
+}
+
+bool GameController::testViolationCallBack(project::TestViolation::Request &req,
+                                           project::TestViolation::Response &res) {
+    BoardState b{req.curr};
+    BoardState next{req.next};
+    saveBoardState(b);
+
+    return validateMove(next);
 }
 
 void GameController::publishToUI(StatusController status) {
@@ -423,10 +433,12 @@ bool GameController::validateMove(BoardState &currentInput) {
                 if (curr[row][col] != ' ') {
                     ROS_ERROR("Board Error: Invalid Change in Board State");
                     return false;
-                } else totalNewPieces++;
-            } else if ((curr[row][col] == ' ') && (next[row][col] != playerPiece)) {
-                ROS_ERROR("Board Error: Wrong piece placed on board");
-                return false;
+                } else if (next[row][col] != playerPiece) {
+                    ROS_ERROR("Board Error: Wrong piece placed on board");
+                    return false;
+                } else {
+                    totalNewPieces++;
+                }
             }
         }
     }

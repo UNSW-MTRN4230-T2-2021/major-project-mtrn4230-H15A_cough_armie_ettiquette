@@ -13,6 +13,7 @@
 #include "ImageProcessor.hpp"
 #include "project/RobotMoveService.h"
 #include "project/UserMoveService.h"
+#include "project/TestViolation.h"
 #include "project/Point.h"
 #include "BoardState.hpp"
 #include "GazeboController.hpp"
@@ -87,6 +88,7 @@ private:
     ros::ServiceClient CameraClient;
     ros::ServiceClient robotClient;
     ros::ServiceClient userClient;
+    ros::ServiceServer testServer;
     ros::Subscriber uiSubscriber;
     ros::Publisher controllerPublisher;
 
@@ -117,6 +119,8 @@ public:
     void makeMove(const int &row, const int &col, project::Point obj);
 
     void uiCallback(const std_msgs::Int32::ConstPtr& status);
+    bool testViolationCallBack(project::TestViolation::Request &req,
+                               project::TestViolation::Response &res);
     GameController();
     void saveBoardState(BoardState &state) { mState.setBoardState(state); };
     void getBoardStateFromCamera();

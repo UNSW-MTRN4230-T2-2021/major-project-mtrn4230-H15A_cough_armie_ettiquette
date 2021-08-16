@@ -6,12 +6,12 @@
 #include "project/BoardInfo.h"
 #include "project/UserMoveService.h"
 #include "project/RobotMoveService.h"
+#include "project/TestViolation.h"
 #include "project/Point.h"
 
 #include "BoardState.hpp"
 #include "ImageProcessor.hpp"
 #include "GazeboController.hpp"
-#include "GameController.hpp"
 
 void powerOn(ros::NodeHandle &n) {
     ros::ServiceClient client {n.serviceClient<project::UserMoveService>("userMoveService")};
@@ -42,6 +42,7 @@ void testSpawnOnLine(ros::NodeHandle &n) {
     assert(client.call(srv));
 
     srv.request.service = GazeboController::Service::SPAWN_TEST;
+    srv.request.player = GazeboController::Player::O;
     project::Point p;
 
     isrv.request.service = ImageProcessor::Request::PROCESS;
@@ -72,6 +73,7 @@ void testSpawnTwoPiecesSameSquare(ros::NodeHandle &n) {
     assert(client.call(srv));
 
     srv.request.service = GazeboController::Service::SPAWN_TEST;
+    srv.request.player = GazeboController::Player::O;
     project::Point p;
 
     isrv.request.service = ImageProcessor::Request::PROCESS;
@@ -89,35 +91,104 @@ void testSpawnTwoPiecesSameSquare(ros::NodeHandle &n) {
 }
 
 void testIncorrectNewPiece(ros::NodeHandle &n) {
-    Board currBoard = {{{'x', 'o', ' '},
-                          {' ', 'x', 'x'},
-                          {' ', 'o', ' '}}};
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xxxo ";
+    assert(!client.call(srv));
 
-    GameController gc;
-    gc.setPlayerPiece('o');
-    gc.saveBoardState(currBoard);
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
 
-    Board nextBoard = {{{'x', 'o', ' '},
-                        {' ', 'x', 'x'},
-                        {'x', 'o', ' '}}};
-
-    assert(!gc.validateMove(nextBoard));
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {'x', 'o', ' '}}}};
 }
 
 void testMultiplePiecesPlaced(ros::NodeHandle &n) {
-    Board currBoard = {{{'x', 'o', ' '},
-                          {' ', 'x', 'x'},
-                          {' ', 'o', ' '}}};
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xxooo";
+    assert(!client.call(srv));
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
 
-    GameController gc;
-    gc.setPlayerPiece('o');
-    gc.saveBoardState(currBoard);
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {'o', 'o', 'o'}}}};
+}
 
-    Board nextBoard = {{{'x', 'o', ' '},
-                        {' ', 'x', 'x'},
-                        {'o', 'o', 'o'}}};
+void testPlaceNoPiece(ros::NodeHandle &n) {
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xx o ";
+    assert(!client.call(srv));
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
 
-    assert(!gc.validateMove(nextBoard));
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {' ', 'o', ' '}}}};
+}
+
+void testRemovePiece(ros::NodeHandle &n) {
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  x  o ";
+    assert(!client.call(srv));
+
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xx   ";
+    assert(!client.call(srv));
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
+
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {' ', 'o', ' '}}}};
+}
+
+void testMovePiece(ros::NodeHandle &n) {
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xx  o";
+    assert(!client.call(srv));
+
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
+
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {' ', ' ', 'o'}}}};
+}
+
+void testReplacePiece(ros::NodeHandle &n) {
+    ros::ServiceClient client {n.serviceClient<project::TestViolation>("testViolation")};
+    project::TestViolation srv;
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xx x ";
+    assert(!client.call(srv));
+
+    srv.request.curr = "xo  xx o ";
+    srv.request.next = "xo  xo o ";
+    assert(!client.call(srv));
+
+    // BoardState currBoard {{{{'x', 'o', ' '},
+    //                       {' ', 'x', 'x'},
+    //                       {' ', 'o', ' '}}}};
+
+    // BoardState nextBoard {{{{'x', 'o', ' '},
+    //                     {' ', 'x', 'x'},
+    //                     {' ', 'x', ' '}}}};
 }
 
 int main(int argc, char **argv) {
@@ -130,6 +201,10 @@ int main(int argc, char **argv) {
     
     testIncorrectNewPiece(n);
     testMultiplePiecesPlaced(n);
+    testPlaceNoPiece(n);
+    testRemovePiece(n);
+    testMovePiece(n);
+    testReplacePiece(n);
 
     return 0;
 }

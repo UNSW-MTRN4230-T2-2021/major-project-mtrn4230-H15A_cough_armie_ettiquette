@@ -93,9 +93,16 @@ bool GazeboController::userMoveCallBack(project::UserMoveService::Request &req,
         return clearBoard();
     } else if (req.service == Service::SPAWN_TEST) {
         geometry_msgs::Pose p{boardToPose(req.goal.x, req.goal.y)};
-        std::string pieceName{pieceNames[mPlayer]+std::to_string(mNumPlayer)};
-        mNumPlayer++;
-        spawnPiece(modelPath+playerPaths[mPlayer], pieceName, p);
+        int num;
+        if (req.player == mPlayer) {
+            num = mNumPlayer;
+            mNumPlayer++;
+        } else if (req.player == mRobot) {
+            num = mNumRobot;
+            mNumRobot++;
+        } else return false;
+        std::string pieceName{pieceNames[req.player]+std::to_string(num)};
+        spawnPiece(modelPath+playerPaths[req.player], pieceName, p);
         return true;
     } else return true;
 }
