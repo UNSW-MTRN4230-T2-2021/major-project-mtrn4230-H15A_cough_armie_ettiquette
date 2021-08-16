@@ -22,6 +22,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -33,23 +34,27 @@ public:
     QAction *actionPower_Off;
     QAction *actionDocumentation;
     QWidget *centralwidget;
-    QPushButton *pushButton;
+    QLabel *whoseTurnLabel;
     QWidget *layoutWidget;
-    QGridLayout *gridLayout;
-    QPushButton *pushButton_8;
-    QPushButton *pushButton_10;
-    QPushButton *pushButton_9;
-    QPushButton *pushButton_11;
-    QPushButton *pushButton_12;
-    QPushButton *pushButton_13;
-    QPushButton *pushButton_14;
-    QPushButton *pushButton_15;
-    QPushButton *pushButton_16;
-    QLabel *scoreLabel;
+    QVBoxLayout *verticalLayout;
     QLabel *difficultyLabel;
-    QLabel *whoseturnLabel;
-    QLabel *matchnoLabel;
     QLabel *timerLabel;
+    QWidget *layoutWidget1;
+    QVBoxLayout *verticalLayout_2;
+    QLabel *matchnoLabel;
+    QLabel *scoreLabel;
+    QPushButton *pBEndTurn;
+    QWidget *layoutWidget2;
+    QGridLayout *gridLayout;
+    QPushButton *pBR1C1;
+    QPushButton *pBR1C2;
+    QPushButton *pBR1C3;
+    QPushButton *pBR2C1;
+    QPushButton *pBR2C2;
+    QPushButton *pBR2C3;
+    QPushButton *pBR3C1;
+    QPushButton *pBR3C2;
+    QPushButton *pBR3C3;
     QMenuBar *menubar;
     QMenu *menuMenu;
     QMenu *menuHelp;
@@ -60,7 +65,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(722, 456);
         actionNew_Game = new QAction(MainWindow);
         actionNew_Game->setObjectName(QStringLiteral("actionNew_Game"));
         QIcon icon;
@@ -78,79 +83,110 @@ public:
         actionDocumentation->setIcon(icon2);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(260, 230, 89, 25));
+        whoseTurnLabel = new QLabel(centralwidget);
+        whoseTurnLabel->setObjectName(QStringLiteral("whoseTurnLabel"));
+        whoseTurnLabel->setGeometry(QRect(170, 20, 351, 71));
+        QFont font;
+        font.setPointSize(30);
+        whoseTurnLabel->setFont(font);
+        whoseTurnLabel->setAlignment(Qt::AlignCenter);
         layoutWidget = new QWidget(centralwidget);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(230, 80, 158, 131));
-        gridLayout = new QGridLayout(layoutWidget);
+        layoutWidget->setGeometry(QRect(480, 130, 231, 72));
+        verticalLayout = new QVBoxLayout(layoutWidget);
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        difficultyLabel = new QLabel(layoutWidget);
+        difficultyLabel->setObjectName(QStringLiteral("difficultyLabel"));
+        QFont font1;
+        font1.setPointSize(20);
+        difficultyLabel->setFont(font1);
+
+        verticalLayout->addWidget(difficultyLabel);
+
+        timerLabel = new QLabel(layoutWidget);
+        timerLabel->setObjectName(QStringLiteral("timerLabel"));
+        timerLabel->setFont(font1);
+
+        verticalLayout->addWidget(timerLabel);
+
+        layoutWidget1 = new QWidget(centralwidget);
+        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(10, 132, 261, 72));
+        verticalLayout_2 = new QVBoxLayout(layoutWidget1);
+        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        matchnoLabel = new QLabel(layoutWidget1);
+        matchnoLabel->setObjectName(QStringLiteral("matchnoLabel"));
+        matchnoLabel->setFont(font1);
+
+        verticalLayout_2->addWidget(matchnoLabel);
+
+        scoreLabel = new QLabel(layoutWidget1);
+        scoreLabel->setObjectName(QStringLiteral("scoreLabel"));
+        scoreLabel->setFont(font1);
+
+        verticalLayout_2->addWidget(scoreLabel);
+
+        pBEndTurn = new QPushButton(centralwidget);
+        pBEndTurn->setObjectName(QStringLiteral("pBEndTurn"));
+        pBEndTurn->setGeometry(QRect(290, 260, 117, 40));
+        pBEndTurn->setFont(font1);
+        layoutWidget2 = new QWidget(centralwidget);
+        layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(272, 112, 158, 131));
+        gridLayout = new QGridLayout(layoutWidget2);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
-        pushButton_8 = new QPushButton(layoutWidget);
-        pushButton_8->setObjectName(QStringLiteral("pushButton_8"));
+        pBR1C1 = new QPushButton(layoutWidget2);
+        pBR1C1->setObjectName(QStringLiteral("pBR1C1"));
 
-        gridLayout->addWidget(pushButton_8, 0, 0, 1, 1);
+        gridLayout->addWidget(pBR1C1, 0, 0, 1, 1);
 
-        pushButton_10 = new QPushButton(layoutWidget);
-        pushButton_10->setObjectName(QStringLiteral("pushButton_10"));
+        pBR1C2 = new QPushButton(layoutWidget2);
+        pBR1C2->setObjectName(QStringLiteral("pBR1C2"));
 
-        gridLayout->addWidget(pushButton_10, 0, 1, 1, 1);
+        gridLayout->addWidget(pBR1C2, 0, 1, 1, 1);
 
-        pushButton_9 = new QPushButton(layoutWidget);
-        pushButton_9->setObjectName(QStringLiteral("pushButton_9"));
+        pBR1C3 = new QPushButton(layoutWidget2);
+        pBR1C3->setObjectName(QStringLiteral("pBR1C3"));
 
-        gridLayout->addWidget(pushButton_9, 0, 2, 1, 1);
+        gridLayout->addWidget(pBR1C3, 0, 2, 1, 1);
 
-        pushButton_11 = new QPushButton(layoutWidget);
-        pushButton_11->setObjectName(QStringLiteral("pushButton_11"));
+        pBR2C1 = new QPushButton(layoutWidget2);
+        pBR2C1->setObjectName(QStringLiteral("pBR2C1"));
 
-        gridLayout->addWidget(pushButton_11, 1, 0, 1, 1);
+        gridLayout->addWidget(pBR2C1, 1, 0, 1, 1);
 
-        pushButton_12 = new QPushButton(layoutWidget);
-        pushButton_12->setObjectName(QStringLiteral("pushButton_12"));
+        pBR2C2 = new QPushButton(layoutWidget2);
+        pBR2C2->setObjectName(QStringLiteral("pBR2C2"));
 
-        gridLayout->addWidget(pushButton_12, 1, 1, 1, 1);
+        gridLayout->addWidget(pBR2C2, 1, 1, 1, 1);
 
-        pushButton_13 = new QPushButton(layoutWidget);
-        pushButton_13->setObjectName(QStringLiteral("pushButton_13"));
+        pBR2C3 = new QPushButton(layoutWidget2);
+        pBR2C3->setObjectName(QStringLiteral("pBR2C3"));
 
-        gridLayout->addWidget(pushButton_13, 1, 2, 1, 1);
+        gridLayout->addWidget(pBR2C3, 1, 2, 1, 1);
 
-        pushButton_14 = new QPushButton(layoutWidget);
-        pushButton_14->setObjectName(QStringLiteral("pushButton_14"));
+        pBR3C1 = new QPushButton(layoutWidget2);
+        pBR3C1->setObjectName(QStringLiteral("pBR3C1"));
 
-        gridLayout->addWidget(pushButton_14, 2, 0, 1, 1);
+        gridLayout->addWidget(pBR3C1, 2, 0, 1, 1);
 
-        pushButton_15 = new QPushButton(layoutWidget);
-        pushButton_15->setObjectName(QStringLiteral("pushButton_15"));
+        pBR3C2 = new QPushButton(layoutWidget2);
+        pBR3C2->setObjectName(QStringLiteral("pBR3C2"));
 
-        gridLayout->addWidget(pushButton_15, 2, 1, 1, 1);
+        gridLayout->addWidget(pBR3C2, 2, 1, 1, 1);
 
-        pushButton_16 = new QPushButton(layoutWidget);
-        pushButton_16->setObjectName(QStringLiteral("pushButton_16"));
+        pBR3C3 = new QPushButton(layoutWidget2);
+        pBR3C3->setObjectName(QStringLiteral("pBR3C3"));
 
-        gridLayout->addWidget(pushButton_16, 2, 2, 1, 1);
+        gridLayout->addWidget(pBR3C3, 2, 2, 1, 1);
 
-        scoreLabel = new QLabel(centralwidget);
-        scoreLabel->setObjectName(QStringLiteral("scoreLabel"));
-        scoreLabel->setGeometry(QRect(440, 160, 151, 31));
-        difficultyLabel = new QLabel(centralwidget);
-        difficultyLabel->setObjectName(QStringLiteral("difficultyLabel"));
-        difficultyLabel->setGeometry(QRect(440, 100, 171, 31));
-        whoseturnLabel = new QLabel(centralwidget);
-        whoseturnLabel->setObjectName(QStringLiteral("whoseturnLabel"));
-        whoseturnLabel->setGeometry(QRect(230, 20, 131, 41));
-        matchnoLabel = new QLabel(centralwidget);
-        matchnoLabel->setObjectName(QStringLiteral("matchnoLabel"));
-        matchnoLabel->setGeometry(QRect(440, 140, 121, 17));
-        timerLabel = new QLabel(centralwidget);
-        timerLabel->setObjectName(QStringLiteral("timerLabel"));
-        timerLabel->setGeometry(QRect(510, 270, 161, 91));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 800, 22));
+        menubar->setGeometry(QRect(0, 0, 722, 22));
         menuMenu = new QMenu(menubar);
         menuMenu->setObjectName(QStringLiteral("menuMenu"));
         menuHelp = new QMenu(menubar);
@@ -184,21 +220,21 @@ public:
         actionNew_Game->setText(QApplication::translate("MainWindow", "New Game", Q_NULLPTR));
         actionPower_Off->setText(QApplication::translate("MainWindow", "Power Off", Q_NULLPTR));
         actionDocumentation->setText(QApplication::translate("MainWindow", "Documentation", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("MainWindow", "End Turn", Q_NULLPTR));
-        pushButton_8->setText(QString());
-        pushButton_10->setText(QString());
-        pushButton_9->setText(QString());
-        pushButton_11->setText(QString());
-        pushButton_12->setText(QString());
-        pushButton_13->setText(QString());
-        pushButton_14->setText(QString());
-        pushButton_15->setText(QString());
-        pushButton_16->setText(QString());
-        scoreLabel->setText(QApplication::translate("MainWindow", "Wins: R | P | D", Q_NULLPTR));
-        difficultyLabel->setText(QApplication::translate("MainWindow", "Difficulty: Easy/Hard", Q_NULLPTR));
-        whoseturnLabel->setText(QApplication::translate("MainWindow", "Robot/Player Turn", Q_NULLPTR));
-        matchnoLabel->setText(QApplication::translate("MainWindow", "Match No: X/3", Q_NULLPTR));
+        whoseTurnLabel->setText(QApplication::translate("MainWindow", "--", Q_NULLPTR));
+        difficultyLabel->setText(QApplication::translate("MainWindow", "Difficulty: --", Q_NULLPTR));
         timerLabel->setText(QApplication::translate("MainWindow", "Time Left:", Q_NULLPTR));
+        matchnoLabel->setText(QApplication::translate("MainWindow", "Match No: --", Q_NULLPTR));
+        scoreLabel->setText(QApplication::translate("MainWindow", "Wins: --", Q_NULLPTR));
+        pBEndTurn->setText(QApplication::translate("MainWindow", "End Turn", Q_NULLPTR));
+        pBR1C1->setText(QString());
+        pBR1C2->setText(QString());
+        pBR1C3->setText(QString());
+        pBR2C1->setText(QString());
+        pBR2C2->setText(QString());
+        pBR2C3->setText(QString());
+        pBR3C1->setText(QString());
+        pBR3C2->setText(QString());
+        pBR3C3->setText(QString());
         menuMenu->setTitle(QApplication::translate("MainWindow", "Menu", Q_NULLPTR));
         menuHelp->setTitle(QApplication::translate("MainWindow", "Help", Q_NULLPTR));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", Q_NULLPTR));
