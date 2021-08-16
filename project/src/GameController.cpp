@@ -410,7 +410,9 @@ void GameController::clearBoard() {
     userClient.call(userSrv);
 }
 
-bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
+bool GameController::validateMove(const BoardState &currentInput) {
+    
+} // INCLUDES CHECKING FOR TIME AND 
 
 
 int main(int argc, char **argv) {

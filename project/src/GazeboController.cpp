@@ -71,27 +71,9 @@ bool GazeboController::robotMoveCallBack(project::RobotMoveService::Request &req
     const double eef_step = 0.01;
     double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
 
-    // move_group.
-
-    // move_group.setPoseTarget(midPose);
     my_plan.trajectory_= trajectory;
     move_group.execute(my_plan);
 
-    // success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    // if(!success) {
-    //     ROS_WARN("Unable to plan path. Ensure goal pose is valid or adjust tolerance");
-    //     return false;
-    // }
-
-    // move_group.move();
-
-    // move_group.setPoseTarget(endPose);
-    // success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    // if(!success) {
-    //     ROS_WARN("Unable to plan path. Ensure goal pose is valid or adjust tolerance");
-    //     return false;
-    // }
-    // move_group.move();
     mOffClient.call(srv);
 
     return robotHome();
@@ -109,6 +91,12 @@ bool GazeboController::userMoveCallBack(project::UserMoveService::Request &req,
         return true;
     } else if (req.service == Service::CLEAR_BOARD) {
         return clearBoard();
+    } else if (req.service == Service::SPAWN_TEST) {
+        geometry_msgs::Pose p{boardToPose(req.goal.x, req.goal.y)};
+        std::string pieceName{pieceNames[mPlayer]+std::to_string(mNumPlayer)};
+        mNumPlayer++;
+        spawnPiece(modelPath+playerPaths[mPlayer], pieceName, p);
+        return true;
     } else return true;
 }
 

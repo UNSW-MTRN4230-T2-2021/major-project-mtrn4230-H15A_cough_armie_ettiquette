@@ -191,7 +191,7 @@ project::BoardInfo ImageProcessor::processPieces(std::vector<Piece> &points) {
     for (auto &piece : points) {
         if (piece.onLine(lines, distance)) {
             ROS_ERROR("Error: Piece is too close to line.");
-            msg.flag = 1
+            msg.flag = 1;
             msg.error = "Error: Piece is too close to line.";
             return msg;
         }
