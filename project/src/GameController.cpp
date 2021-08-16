@@ -409,9 +409,12 @@ void GameController::clearBoard() {
 
 bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
 
-void throwViolation(); // RETURN TYPE DEPENDS ON USER INTERFACE
-
-void endGame(); // announce winner and clear board and ask if user wants to play again
+void endGame() {
+    SetCount = 0;
+    GameActive = false,
+    SetStarted = false,
+    CurrentStatusUI = NO_UI_INFO
+}
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
