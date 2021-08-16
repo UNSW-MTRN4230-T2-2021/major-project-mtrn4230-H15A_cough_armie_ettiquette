@@ -27,7 +27,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // DO NOTHING!
         
     } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9 && GameActive) {
-        // Record Opponent Move
+        // RECORD OPPONENT MOVE
         CurrentMove = CurrentStatusUI - 1; // change input to 0 - 8
         int row = CurrentMove / BoardState::BOARD_SIZE;
         int col = CurrentMove % BoardState::BOARD_SIZE;
@@ -497,6 +497,14 @@ void GameController::endGame() {
     CurrentMove = 0;
 }
 
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
