@@ -4,13 +4,13 @@ GameController::GameController():
     SetCount{0},
     CurrentPlayer{NA},
     SelectedDifficulty{Null},
-    TimeLimit{120},
     GameActive{false},
     SetStarted{false}
 {
     controllerPublisher = n.advertise<std_msgs::Int32>("controller_message", 100);
-    mImageSub = n.serviceClient<project::ImageRequest>("imageRequest");
+    CameraClient = n.serviceClient<project::ImageRequest>("imageRequest");
     robotClient = n.serviceClient<project::RobotMoveService>("robotMoveService");
+    userClient = n.serviceClient<project::UserMoveService>("userMoveService");
     uiSubscriber = n.subscribe("msgsToController", 1000, &GameController::uiCallback, this);
     
     for (int i = 0; i < TOTAL_STAT; i++) {
@@ -21,10 +21,107 @@ GameController::GameController():
 void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     CurrentStatusUI = status->data;
     std::cout << CurrentStatusUI << std::endl;
+    
+    if (CurrentStatusUI == NO_UI_INFO) {
+        // DO NOTHING!
+        
+    } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9 && GameActive) {
+        // RECORD OPPONENT MOVE
+        CurrentMove = CurrentStatusUI - 1; // change input to 0 - 8
+        int row = CurrentMove / BoardState::BOARD_SIZE;
+        int col = CurrentMove % BoardState::BOARD_SIZE;
+        addPieceTest(row, col);
+        showBoardState();
+        userPlacePiece(row, col);
+        
+        getBoardStateFromCamera();
+        
+        // CHECK FOR WINS
+        bool setWon = indicateSetWinner();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        
+        // CHECK IF ANYONE HAS WON THE ENTIRE GAME
+        if (setWon) {
+            SetCount++;
+            clearBoard();
+            if (determineGameWinner()) {
+                endGame();
+            };
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+        
+        // MAKE A MOVE
+        determineCurrentPlayer();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        if (CurrentPlayer == AI) {
+            decideMove();
+        }
+        
+        // CHECK IF ROBOT HAS WON THEN END THE SET AND SEND STATUS TO UI
+        setWon = indicateSetWinner();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        
+        // CHECK IF ANYONE HAS WON THE ENTIRE GAME
+        if (setWon) {
+            SetCount++;
+            clearBoard();
+            if (determineGameWinner()) {
+                endGame();
+            };
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+        
+        // SET CURRENTPLAYER
+        determineCurrentPlayer();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        CurrentMove = 0;
+        
+    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD && GameActive) {
+        startGame();
+        CurrentStatusUI = 0;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        
+        determineCurrentPlayer();
+        if (CurrentPlayer == AI) {
+            decideMove();
+            determineCurrentPlayer();
+        }
+        
+    } else if (CurrentStatusUI == PAUSE_GAME) {
+        GameActive = false;
+    } else if (CurrentStatusUI == UNPAUSE_GAME) {
+        GameActive = true;
+    } else if (CurrentStatusUI == POWER_OFF) { 
+        
+    } else if (CurrentStatusUI == VIOLATION_RESOLVED) {
+        
+    } else {
+        // DO NOTHING!
+    }
 }
 
-void GameController::saveBoardState(BoardState &state) {
-    mState.setBoardState(state);
+void GameController::publishToUI(StatusController status) {
+    std_msgs::Int32 msg;
+    msg.data = status;
+    GameController::controllerPublisher.publish(msg);
+}
+
+void GameController::startGame() {
+    if (CurrentStatusUI == GameController::START_EASY) {
+        SelectedDifficulty = GameController::Easy;
+        std::cout << "Setting up an easy game...." << std::endl;
+    }
+    else if (CurrentStatusUI == GameController::START_HARD) {
+        SelectedDifficulty = GameController::Hard;
+        std::cout << "Setting up an hard game...." << std::endl;
+    }
+    else {
+        // OBSOLETE: UI ENSURES DIFFICULTY IS ALWAYS SELECTED
+        SelectedDifficulty = GameController::Null;
+    }
+
+    GameActive = true;
+    publishToUI(GAME_STARTED);
 }
 
 void GameController::determineCurrentPlayer() {
@@ -47,33 +144,50 @@ void GameController::determineCurrentPlayer() {
                 CurrentPlayer = OP;
             }
             else {
-                // TODO: Throw Exception --> Request for a difficulty level input
+                // OBSOLETE: UI ENSURES DIFFICULTY IS ALWAYS SELECTED
             }
         }
     }
     
-    std_msgs::Int32 msg;
     if (CurrentPlayer == OP) {
-        msg.data = 4;
-        GameController::controllerPublisher.publish(msg);
+        publishToUI(PLAYER_TURN);
     }
     else if (CurrentPlayer == AI) {
-        msg.data = 3;
-        GameController::controllerPublisher.publish(msg);
+        publishToUI(ROBOT_TURN);
     }
 }
 
-void GameController::indicateSetWinner() {
+void GameController::getBoardStateFromCamera() {
+    BoardState::Board b = mState.getBoard();
+    
+    project::ImageRequest srv;
+    srv.request.service = ImageProcessor::Request::SETUP;
+    CameraClient.call(srv);
+    
+    srv.request.service = ImageProcessor::Request::PROCESS;
+    CameraClient.call(srv);
+    
+    project::BoardInfo info = srv.response.info;
+    
+    auto newBoard = BoardState(info.board);
+    b = newBoard.getBoard();
+    
+    mState.setBoardState(newBoard);
+}
+
+bool GameController::indicateSetWinner() {
     /* TRIADS: ROWs, COLs, when row == col */
     BoardState::Board board = mState.getBoard();
 
     bool winnerFound = false;
+    char winner = ' ';
     
     // Check for all rows
     for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
         if (board[row][0] == board[row][1] && board[row][1] == board[row][2] && board[row][0] != ' ') {
             controllerStatus.setWinners[SetCount] = board[row][0];
             winnerFound = true;
+            winner = board[row][0];
         }
     }
     
@@ -82,6 +196,7 @@ void GameController::indicateSetWinner() {
         if (board[0][col] == board[1][col] && board[1][col] == board[2][col] && board[0][col] != ' ') {
             controllerStatus.setWinners[SetCount] = board[0][col];
             winnerFound = true;
+            winner = board[0][col];
         }
     }
     
@@ -89,11 +204,13 @@ void GameController::indicateSetWinner() {
     if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
         controllerStatus.setWinners[SetCount] = board[0][0];
         winnerFound = true;
+        winner = board[1][1];
     }
     
     if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[1][1] != ' ') {
         controllerStatus.setWinners[SetCount] = board[1][1];
         winnerFound = true;
+        winner = board[1][1];
     }
     
     // Check for draw
@@ -109,21 +226,29 @@ void GameController::indicateSetWinner() {
         
         if (isFull) {
             controllerStatus.setWinners[SetCount] = DR;
+            publishToUI(DRAW_SET);
+        }
+    }
+    else 
+    {
+        if (winner == 'x') {
+            publishToUI(ROBOT_WIN_SET);
+        }
+        else if (winner == 'o') {
+            publishToUI(PLAYER_WIN_SET);
         }
     }
     
-    std_msgs::Int32 msg;
-    msg.data = 12;
-    GameController::controllerPublisher.publish(msg);
+    return winnerFound;
 }
 
 bool isOP(int p) { return (p == GameController::OP); }
 bool isAI(int p) { return (p == GameController::AI); }
 
-void GameController::determineGameWinner() {
-    // TODO: Update so that it works as such: this only gets called when a winner of a set is found this increment setcount after
+bool GameController::determineGameWinner() {
     if (SetCount < 2) {
         controllerStatus.gameWinner = NA;
+        return false;
     }
     
     int OPwincount = count_if(controllerStatus.setWinners.begin(), controllerStatus.setWinners.end(), isOP);
@@ -132,25 +257,33 @@ void GameController::determineGameWinner() {
     if (std::abs(OPwincount - AIwincount) > 1) {
         if (OPwincount < AIwincount) {
             controllerStatus.gameWinner = AI;
+            publishToUI(ROBOT_WIN_GAME);
+            return true;
         }
         else if (AIwincount < OPwincount) {
             controllerStatus.gameWinner = OP;
+            publishToUI(PLAYER_WIN_GAME);
+            return true;
         }
     }
     
     if (SetCount == 2 && controllerStatus.gameWinner == NA) {
         controllerStatus.gameWinner = DR;
+        publishToUI(DRAW_GAME);
+        return true;
     }
+    
+    return false;
 }
 
-void GameController::decideMove() { // TODO: SEND RESULT TO robotClient
+void GameController::decideMove() {
     BoardState::Board b = mState.getBoard();
     project::ImageRequest srv;
     srv.request.service = ImageProcessor::Request::SETUP;
     
-    mImageSub.call(srv);
+    CameraClient.call(srv);
     srv.request.service = ImageProcessor::Request::PROCESS;
-    mImageSub.call(srv);
+    CameraClient.call(srv);
     
     project::BoardInfo info = srv.response.info;
     auto point = info.pieces[0];
@@ -181,63 +314,45 @@ void GameController::decideMove() { // TODO: SEND RESULT TO robotClient
         }
         else {
             int randomIndex = rand() % nSpaces;
-            robotPlacePiece(avRows.at(randomIndex), avCols.at(randomIndex), point);
-            mState.addPiece(avCols.at(randomIndex), avRows.at(randomIndex), 'x');
-            mState.showBoardState();
+            makeMove(avRows.at(randomIndex), avCols.at(randomIndex), point);
         }
     }
     
     else if (SelectedDifficulty == GameController::Hard) {
         if (mState.BoardEmpty()) {
-            mState.addPiece(1, 1, 'x');
-            robotPlacePiece(1, 1, point);;
-            mState.showBoardState();
+            makeMove(1, 1, point);
             return;
         }   
         
         // Can you win now?
         struct BoardState::point p = mState.formTriad('x');
         if (p.row != -1 && p.col != -1) {
-            mState.addPiece(p.col, p.row, 'x');
-            robotPlacePiece(p.row, p.col, point);
-            mState.showBoardState();
+            makeMove(p.row, p.col, point);
             return;
         }
         
         // Can the opponent win next?
         p = mState.formTriad('o');
         if (p.row != -1 && p.col != -1) {
-            mState.addPiece(p.col, p.row, 'x');
-            robotPlacePiece(p.row, p.col, point);
-            mState.showBoardState();
+            makeMove(p.row, p.col, point);
             return;
         }
         
         // Prioritise centre first, then corners, then 
         if (b[1][1] == ' ') {
-            mState.addPiece(1, 1, 'x');
-            robotPlacePiece(1, 1, point);
-            mState.showBoardState();
+            makeMove(1, 1, point);
             return;
         } else if (b[0][0] == ' ') {
-            mState.addPiece(0, 0, 'x');
-            robotPlacePiece(0, 0, point);
-            mState.showBoardState();
+            makeMove(0, 0, point);
             return;
         } else if (b[2][2] == ' ') {
-            mState.addPiece(2, 2, 'x');
-            robotPlacePiece(2, 2, point);
-            mState.showBoardState();
+            makeMove(2, 2, point);
             return;
         } else if (b[2][0] == ' ') {
-            mState.addPiece(0, 2, 'x');
-            robotPlacePiece(2, 0, point);
-            mState.showBoardState();
+            makeMove(2, 0, point);
             return;
         } else if (b[0][2] == ' ') {
-            mState.addPiece(2, 0, 'x');
-            robotPlacePiece(0, 2, point);
-            mState.showBoardState();
+            makeMove(0, 2, point);
             return;
         }
         
@@ -245,30 +360,69 @@ void GameController::decideMove() { // TODO: SEND RESULT TO robotClient
         for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
             for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
                 if (b[row][col] == ' ') {
-                    robotPlacePiece(row, col, point);
+                    makeMove(row, col, point);
                 }
             }
         }
     }
 }
 
+void GameController::makeMove(const int &row, const int &col, project::Point obj) {
+    mState.addPiece(col, row, 'x');
+    robotPlacePiece(row, col, obj);
+    mState.showBoardState();
+    StatusController position = static_cast<StatusController>(row*col+1);
+    
+    publishToUI(position);
+}
+
 void GameController::robotPlacePiece(const int &row, const int &col, project::Point obj) {
     project::Point start = obj;
     project::Point end;
     end.x = col; end.y = row;
+    
     project::RobotMoveService robotSrv;
     robotSrv.request.start = start;
     robotSrv.request.goal = end;
 
-    ros::ServiceClient robClient{n.serviceClient<project::RobotMoveService>("robotMoveService")};
-    robClient.call(robotSrv);
+    robotClient.call(robotSrv);
+}
+
+void GameController::userPlacePiece(int row, int col) {
+    project::Point p; p.x = col; p.y = row;
+    
+    project::UserMoveService userSrv;
+    userSrv.request.service = GazeboController::Service::SPAWN_MOVE; 
+    userSrv.request.goal = p;
+    
+    userClient.call(userSrv);
+}
+
+void GameController::startRobot() {
+    project::UserMoveService userSrv;
+    userSrv.request.service = GazeboController::Service::POWER_ON;
+    userSrv.request.player = GazeboController::Player::O;
+    
+    userClient.call(userSrv);
+}
+
+void GameController::clearBoard() {
+    project::UserMoveService userSrv;
+    userSrv.request.service = GazeboController::Service::CLEAR_BOARD;
+    
+    userClient.call(userSrv);
 }
 
 bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
 
-void throwViolation(); // RETURN TYPE DEPENDS ON USER INTERFACE
-
-void endGame(); // announce winner and clear board and ask if user wants to play again
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
@@ -279,86 +433,9 @@ int main(int argc, char **argv) {
     std::cout << "GameController Readying...." << std::endl;
     GameController firstGame;
     
-    ros::ServiceClient client {firstGame.n.serviceClient<project::UserMoveService>("userMoveService")};
-    project::UserMoveService srv;
-    
-    srv.request.service = GazeboController::Service::POWER_ON;
-    srv.request.player = GazeboController::Player::O;
-    client.call(srv);
-    
     std::cout << "Game Begin!" << std::endl;
-    
-    // Wait for user to select difficulty level
-    char level = ' ';
-    std::cout << "choose 'e' for easy, 'h' for hard, or 'r' to randomise: ";
-    std::cin.get(level);
-    std::cout << "LEVEL: " << level << std::endl;
-    if (level == 'r') {
-        if (std::rand() % 2 == 0) {
-            firstGame.setDifficultyLevel(GameController::Easy);
-            std::cout << "Playing an easy game...." << std::endl;
-        }
-        else {
-            firstGame.setDifficultyLevel(GameController::Hard);
-            std::cout << "Playing a hard game...." << std::endl;
-        }
-    }
-    else if (level == 'h') {
-        firstGame.setDifficultyLevel(GameController::Hard);
-        std::cout << "Playing a hard game...." << std::endl;
-    }
-    else if (level == 'e') {
-        firstGame.setDifficultyLevel(GameController::Easy);
-        std::cout << "Playing an easy game...." << std::endl;
-    }
-    else {
-        firstGame.setDifficultyLevel(GameController::Null);
-    }
-    
-    firstGame.activateGame();
 
-    while(ros::ok()) {
-        // Determine whose turn
-        firstGame.determineCurrentPlayer();
-        
-        // Get current players move
-        if (firstGame.getCurrentPlayer() == GameController::NA) {
-            // TODO: ERROR! --> Message to User / maybe just let user start(?)
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::OP) {
-            // TODO: Request User to make a move
-            int row = 0; int col = 0;
-            std::cout << "Enter row: ";
-            std::cin >> row;
-            
-            std::cout << "Enter col: ";
-            std::cin >> col;
-            
-            firstGame.addPieceTest(row, col);
-            firstGame.showBoardState();
-            
-            srv.request.service = GazeboController::Service::SPAWN_MOVE; 
-            project::Point p; p.x = col; p.y = row;
-            srv.request.goal = p;
-            client.call(srv);
-            
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::AI) {
-            firstGame.decideMove();
-        }
-        
-        // Check for violations after every move
-        
-        
-        
-        // Check for set winner after every move
-
-
-        // TODO: THIS IS TESTING SECTION, DELETE LATER
-        firstGame.indicateSetWinner();
-        firstGame.determineGameWinner();
-        ros::Duration(3).sleep();
-    }
+    while(ros::ok()) { }
     
     std::cout << "Game Finished!" << std::endl;
 

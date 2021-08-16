@@ -118,8 +118,7 @@ void MainWindow::msgsToUserCallback(const std_msgs::Int32& _msgRcv)
          qDebug() << "Warning! Invalid Status Number" << msgRcv.data;
          break;
   }
-
-}
+  
 /*--------------
  TIMER FUNCTIONS
 ---------------*/

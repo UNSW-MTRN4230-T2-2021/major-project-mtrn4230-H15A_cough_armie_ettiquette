@@ -47,6 +47,7 @@ public:
     char triadFound();
 
     void setBoardState(BoardState &state);
+    void emptyBoard();
     Board getBoard() { return mBoard; }
     bool BoardEmpty();
 };

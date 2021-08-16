@@ -35,9 +35,18 @@ public:
     Piece(const cv::Point2f &centre, const char &letter):
         Piece{centre.x, centre.y, letter} {}
 
-    bool inGrid(const float &xMin, const float &xMax,
-                const float &yMin, const float &yMax) { return (mX < xMax && mX > xMin && 
-                                                                mY < yMax && mY > yMin); }
+    bool inGrid(const float &min, const float &max) { return (mX < max && mX > min && 
+                                                                mY < max && mY > min); }
+    bool onLine(std::array<float, 4> lines, const int &distance) {
+        for (auto &line : lines) {
+            if (((mX > line - distance) && (mX < line + distance) &&
+                 (mY > lines[0] - distance) && (mY < lines[3] + distance)) ||
+                ((mY > line - distance) && (mY < line + distance) &&
+                 (mX > lines[0] - distance) && (mX < lines[3] + distance))) return true;
+        }
+
+        return false;
+    }
 
     float getX() { return mX; }
     float getY() { return mY; }
@@ -66,7 +75,7 @@ private:
     cv::Point2f findContourCentre(const std::vector<cv::Point> &contour);
     void sortCorners(std::array<cv::Point2f, 4> &corners);
 
-    void handleSetUp(cv::Mat &image);
+    bool handleSetUp(cv::Mat &image);
     void findBinaryPieces(std::vector<Piece> &points, cv::Mat &threshold, const char &letter);
     void findRedPieces(std::vector<Piece> &points, cv::Mat &image);
     void findBluePieces(std::vector<Piece> &points, cv::Mat &image);
