@@ -127,7 +127,7 @@ public:
     bool indicateSetWinner();
     bool determineGameWinner();
     void decideMove(); 
-    bool validateMove(const BoardState &currentInput);  
+    bool validateMove(BoardState &currentInput);  
     void throwViolation();
     void endGame(); // announce winner and clear board and ask if user wants to play again
 

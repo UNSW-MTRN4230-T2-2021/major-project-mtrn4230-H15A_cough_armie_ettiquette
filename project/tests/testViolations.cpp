@@ -11,6 +11,7 @@
 #include "BoardState.hpp"
 #include "ImageProcessor.hpp"
 #include "GazeboController.hpp"
+#include "GameController.hpp"
 
 void powerOn(ros::NodeHandle &n) {
     ros::ServiceClient client {n.serviceClient<project::UserMoveService>("userMoveService")};
@@ -87,13 +88,48 @@ void testSpawnTwoPiecesSameSquare(ros::NodeHandle &n) {
     assert(client.call(srv));
 }
 
+void testIncorrectNewPiece(ros::NodeHandle &n) {
+    Board currBoard = {{{'x', 'o', ' '},
+                          {' ', 'x', 'x'},
+                          {' ', 'o', ' '}}};
+
+    GameController gc;
+    gc.setPlayerPiece('o');
+    gc.saveBoardState(currBoard);
+
+    Board nextBoard = {{{'x', 'o', ' '},
+                        {' ', 'x', 'x'},
+                        {'x', 'o', ' '}}};
+
+    assert(!gc.validateMove(nextBoard));
+}
+
+void testMultiplePiecesPlaced(ros::NodeHandle &n) {
+    Board currBoard = {{{'x', 'o', ' '},
+                          {' ', 'x', 'x'},
+                          {' ', 'o', ' '}}};
+
+    GameController gc;
+    gc.setPlayerPiece('o');
+    gc.saveBoardState(currBoard);
+
+    Board nextBoard = {{{'x', 'o', ' '},
+                        {' ', 'x', 'x'},
+                        {'o', 'o', 'o'}}};
+
+    assert(!gc.validateMove(nextBoard));
+}
+
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "violation_test");
     ros::NodeHandle n;
-    powerOn(n);
-    testSpawnOnLine(n);
-    testSpawnTwoPiecesSameSquare(n);
+    // powerOn(n); 
+    // testSpawnOnLine(n);
+    // testSpawnTwoPiecesSameSquare(n); 
+    
+    testIncorrectNewPiece(n);
+    testMultiplePiecesPlaced(n);
 
     return 0;
 }

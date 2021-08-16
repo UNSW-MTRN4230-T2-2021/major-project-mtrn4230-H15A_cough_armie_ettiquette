@@ -412,7 +412,7 @@ void GameController::clearBoard() {
     userClient.call(userSrv);
 }
 
-bool GameController::validateMove(const BoardState &currentInput) {
+bool GameController::validateMove(BoardState &currentInput) {
     BoardState::Board curr{mState.getBoard()};
     BoardState::Board next{currentInput.getBoard()};
     int totalNewPieces{0};
