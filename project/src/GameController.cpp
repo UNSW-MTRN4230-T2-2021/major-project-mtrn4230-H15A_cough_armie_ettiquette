@@ -25,7 +25,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     if (CurrentStatusUI == NO_UI_INFO) {
         // DO NOTHING!
         
-    } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9) {
+    } else if (CurrentStatusUI >= POS_1 && CurrentStatusUI <= POS_9 && GameActive) {
         // RECORD OPPONENT MOVE
         CurrentMove = CurrentStatusUI - 1; // change input to 0 - 8
         int row = CurrentMove / BoardState::BOARD_SIZE;
@@ -44,7 +44,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             if (determineGameWinner()) {
-                GameActive = false;
+                endGame();
             };
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
@@ -64,7 +64,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             if (determineGameWinner()) {
-                GameActive = false;
+                endGame();
             };
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
@@ -72,8 +72,9 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         // SET CURRENTPLAYER
         determineCurrentPlayer();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        CurrentMove = 0;
         
-    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD) {
+    } else if (CurrentStatusUI >= START_EASY && CurrentStatusUI <= START_HARD && GameActive) {
         startGame();
         CurrentStatusUI = 0;
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -411,6 +412,15 @@ void GameController::clearBoard() {
 }
 
 bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
+
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 
 int main(int argc, char **argv) {
