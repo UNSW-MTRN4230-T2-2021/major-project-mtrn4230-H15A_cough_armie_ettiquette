@@ -412,12 +412,6 @@ void GameController::clearBoard() {
 
 bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
 
-void endGame() {
-    SetCount = 0;
-    GameActive = false,
-    SetStarted = false,
-    CurrentStatusUI = NO_UI_INFO
-}
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
