@@ -424,7 +424,6 @@ void GameController::endGame() {
     CurrentMove = 0;
 }
 
-
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
     ros::init(argc, argv, "game_controller");

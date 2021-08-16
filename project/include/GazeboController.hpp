@@ -60,7 +60,8 @@ public:
     enum Service {
         POWER_ON = 0,
         SPAWN_MOVE,
-        CLEAR_BOARD
+        CLEAR_BOARD,
+        SPAWN_TEST
     };
 
     enum Player {
