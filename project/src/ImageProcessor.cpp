@@ -5,6 +5,7 @@ ImageProcessor::ImageProcessor(ros::NodeHandle &n):
     mIt{n},
     mGameRequest{n.advertiseService("imageRequest", &ImageProcessor::imageRequestCallBack, this)} {
     mImageSub = mIt.subscribe("camera/image_raw", 1, &ImageProcessor::processImageCallBack, this);
+    // cv::namedWindow("Im", CV_WINDOW_AUTOSIZE);
 }
 
 void ImageProcessor::processImageCallBack(const sensor_msgs::ImageConstPtr &msg) {
@@ -14,6 +15,7 @@ void ImageProcessor::processImageCallBack(const sensor_msgs::ImageConstPtr &msg)
 // Dummy Service Handler
 bool ImageProcessor::imageRequestCallBack(project::ImageRequest::Request &req,
                                           project::ImageRequest::Response &res) {
+    ros::Duration(0.5).sleep();
     cv_bridge::CvImagePtr cvPtr;
 
     try {
@@ -26,11 +28,11 @@ bool ImageProcessor::imageRequestCallBack(project::ImageRequest::Request &req,
     cv::Mat image {cvPtr->image};
 
     if (req.service == Request::SETUP)
-        handleSetUp(image);
-    else if (req.service == Request::PROCESS)
+        return handleSetUp(image);
+    else if (req.service == Request::PROCESS) {
         res.info = processImage(image);
-
-    return true;
+        return (res.info.flag != 1);
+    }
 }
 
 cv::Point2f ImageProcessor::findContourCentre(const std::vector<cv::Point> &contour) {
@@ -60,7 +62,11 @@ void ImageProcessor::sortCorners(std::array<cv::Point2f, 4> &corners) {
         std::iter_swap(corners.rbegin(), corners.rbegin() + 1);
 }
 
-void ImageProcessor::handleSetUp(cv::Mat &image) {
+bool ImageProcessor::handleSetUp(cv::Mat &image) {
+    if (!mH.empty()) { 
+        ROS_INFO("Image Already Set up");
+        return true; 
+    }
     cv::Mat hsv_image, magenta_threshold;
     cv::cvtColor(image, hsv_image, cv::COLOR_BGR2HSV);
 
@@ -78,15 +84,17 @@ void ImageProcessor::handleSetUp(cv::Mat &image) {
                   return cv::contourArea(cv::Mat(contour2)) < cv::contourArea(cv::Mat(contour1));
               });
 
+    if (contours.size() < 4) {
+        ROS_ERROR("ERROR: One or more of the grid corners are obscured. ABORT SETUP");
+        return false;
+    }
+
     std::array<cv::Point2f, 4> inputCorners;
 
     for (int i = 0; i < 4; i++)
         inputCorners[i] = findContourCentre(contours[i]);
 
     sortCorners(inputCorners);
-
-    for (auto &corner : inputCorners)
-        std::cout << corner.x << ", " << corner.y <<std::endl;
 
     // TODO: These numbers part of enum
     std::array<cv::Point2f, 4> outputCorners {
@@ -97,6 +105,8 @@ void ImageProcessor::handleSetUp(cv::Mat &image) {
     cv::Mat output;
 
     mH = cv::getPerspectiveTransform(inputCorners, outputCorners);
+
+    return true;
 }
 
 void ImageProcessor::findBinaryPieces(std::vector<Piece> &points, cv::Mat &threshold,
@@ -151,10 +161,13 @@ project::BoardInfo ImageProcessor::processImage(cv::Mat &image) {
     findRedPieces(points, correctedImage);
     findBluePieces(points, correctedImage);
 
-    for (auto &piece : points) {
-        std::cout << piece.getX() << ", " << piece.getY() << ", " << piece.getLetter() << std::endl;
-        cv::circle(correctedImage, cv::Point(piece.getX(), piece.getY()), 3, cv::Scalar(0, 255, 0), -1);
-    }
+    // for (auto &piece : points) {
+    //     cv::circle(correctedImage, cv::Point(piece.getX(), piece.getY()), 3, cv::Scalar(0, 255, 0), -1);
+    // }
+
+    // cv::imshow("Im", correctedImage);
+    // cv::waitKey();
+
     return processPieces(points);
 }
 
@@ -164,22 +177,35 @@ project::BoardInfo ImageProcessor::processPieces(std::vector<Piece> &points) {
     //                            Piece(50, 70, 'O'), Piece(80, 90, 'X'), Piece(11, 60, 'O')};
 
     // TODO: Change to Enum
-    const float yMin{120.0}, yMax{480.0}, xMin{120.0}, xMax{480.0};
+    const std::array<float, 4> lines {
+        120.0, 240.0, 360.0, 480.0
+    };
+    float distance{30.0};
 
     // TODO: Move this out
     BoardState board;
     project::BoardInfo msg;
     project::Point point_msg;
+    msg.flag = 0;
 
     for (auto &piece : points) {
-        if (piece.inGrid(xMin, xMax, yMin, yMax)) {
-            float gridLength = (yMax - yMin) / 3.0;
-            int xPos { (int)((piece.getX() - xMin) / gridLength) };
-            int yPos{ (int)((piece.getY() - yMin) / gridLength) };
+        if (piece.onLine(lines, distance)) {
+            ROS_ERROR("Error: Piece is too close to line.");
+            msg.flag = 1
+            msg.error = "Error: Piece is too close to line.";
+            return msg;
+        }
+        else if (piece.inGrid(lines[0], lines[3])) {
+            float gridLength = (lines[3] - lines[0]) / 3.0;
+            int xPos { (int)((piece.getX() - lines[0]) / gridLength) };
+            int yPos{ (int)((piece.getY() - lines[0]) / gridLength) };
 
             // TODO: THROW ERROR
             if (!board.addPiece(xPos, yPos, piece.getLetter())) {
                 ROS_ERROR("Error: Two pieces in the same square!");
+                msg.flag = 1;
+                msg.error = "Error: Two pieces in the same square!";
+                return msg;
             }
         } else {
             // point_msg.
@@ -202,7 +228,10 @@ int main(int argc, char **argv) {
 
     ImageProcessor ip(n);
 
-    ros::spin();
+    // ros::spin();
+    ros::AsyncSpinner spinner(2);
+    spinner.start();
+    ros::waitForShutdown();
 
     // return 0;
 }
