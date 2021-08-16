@@ -66,12 +66,13 @@ public:
         ROBOT_READY = 10,
         GAME_STARTED = 11,
         PLAYER_TURN = 12,
-        ROBOT_WIN_SET = 13,
-        PLAYER_WIN_SET = 14,
-        DRAW_SET = 15,
-        ROBOT_WIN_GAME = 16,
-        PLAYER_WIN_GAME = 17,
-        DRAW_GAME = 18
+        ROBOT_TURN = 13,
+        ROBOT_WIN_SET = 14,
+        PLAYER_WIN_SET = 15,
+        DRAW_SET = 16,
+        ROBOT_WIN_GAME = 17,
+        PLAYER_WIN_GAME = 18,
+        DRAW_GAME = 19
     };
 
     static const int TOTAL_STAT = 3;
