@@ -436,40 +436,7 @@ int main(int argc, char **argv) {
     
     std::cout << "Game Begin!" << std::endl;
 
-    while(ros::ok()) {
-        // Determine whose turn
-        /*firstGame.determineCurrentPlayer();
-        
-        // Get current players move
-        if (firstGame.getCurrentPlayer() == GameController::NA) {
-            // TODO: ERROR! --> Message to User / maybe just let user start(?)
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::OP) {
-            // TODO: Request User to make a move
-            int row = 0; int col = 0;
-            std::cout << "Enter row: ";
-            std::cin >> row;
-            
-            std::cout << "Enter col: ";
-            std::cin >> col;
-            
-            firstGame.addPieceTest(row, col);
-            firstGame.showBoardState();
-            
-            firstGame.userPlacePiece(row, col);
-        }
-        else if (firstGame.getCurrentPlayer() == GameController::AI) {
-            firstGame.decideMove();
-        }
-        
-        // Check for set winner after every move
-	
-
-        // TODO: THIS IS TESTING SECTION, DELETE LATER
-        firstGame.indicateSetWinner();
-        firstGame.determineGameWinner();
-        ros::Duration(3).sleep();*/
-    }
+    while(ros::ok()) { }
     
     std::cout << "Game Finished!" << std::endl;
 
