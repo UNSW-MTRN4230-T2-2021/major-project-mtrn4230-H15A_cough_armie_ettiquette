@@ -399,6 +399,8 @@ void GameController::startRobot() {
     project::UserMoveService userSrv;
     userSrv.request.service = GazeboController::Service::POWER_ON;
     userSrv.request.player = GazeboController::Player::O;
+
+    setPlayerPiece('o');
     
     userClient.call(userSrv);
 }
@@ -411,7 +413,30 @@ void GameController::clearBoard() {
 }
 
 bool GameController::validateMove(const BoardState &currentInput) {
-    
+    BoardState::Board curr{mState.getBoard()};
+    BoardState::Board next{currentInput.getBoard()};
+    int totalNewPieces{0};
+
+    for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+        for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+            if (curr[row][col] != next[row][col]) {
+                if (curr[row][col] != ' ') {
+                    ROS_ERROR("Board Error: Invalid Change in Board State");
+                    return false;
+                } else totalNewPieces++;
+            } else if ((curr[row][col] == ' ') && (next[row][col] != playerPiece)) {
+                ROS_ERROR("Board Error: Wrong piece placed on board");
+                return false;
+            }
+        }
+    }
+    if (totalNewPieces != 1) {
+        ROS_ERROR("Wrong number of pieces placed on the board");
+        return false;
+    }
+
+    return true;
+
 } // INCLUDES CHECKING FOR TIME AND 
 
 

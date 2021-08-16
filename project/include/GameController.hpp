@@ -95,6 +95,7 @@ private:
     bool SetStarted;
     int CurrentStatusUI;
     int CurrentMove; // number from 1-9, if this is -1 then no move was found
+    char playerPiece{'o'};
 
     Player CurrentPlayer;
     DifficultyLevel SelectedDifficulty;
@@ -129,6 +130,8 @@ public:
     bool validateMove(const BoardState &currentInput);  
     void throwViolation();
     void endGame(); // announce winner and clear board and ask if user wants to play again
+
+    void setPlayerPiece(const char &piece) { playerPiece = piece; }
 };
 
 #endif
