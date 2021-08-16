@@ -451,6 +451,7 @@ bool GameController::validateMove(BoardState &currentInput) {
     }
 
     return true;
+}
 
 void GameController::endGame() {
     GameActive = false;
