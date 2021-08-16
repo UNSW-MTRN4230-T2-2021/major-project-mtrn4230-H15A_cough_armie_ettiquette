@@ -149,6 +149,9 @@ void GameController::determineCurrentPlayer() {
     if (CurrentPlayer == OP) {
         publishToUI(PLAYER_TURN);
     }
+    else if (CurrentPlayer == AI) {
+        publishToUI(ROBOT_TURN);
+    }
 }
 
 void GameController::getBoardStateFromCamera() {
