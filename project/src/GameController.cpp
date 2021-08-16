@@ -11,6 +11,7 @@ GameController::GameController():
     CameraClient = n.serviceClient<project::ImageRequest>("imageRequest");
     robotClient = n.serviceClient<project::RobotMoveService>("robotMoveService");
     userClient = n.serviceClient<project::UserMoveService>("userMoveService");
+    testServer = n.advertiseService("testViolation", &GameController::testViolationCallBack, this);
     uiSubscriber = n.subscribe("msgsToController", 1000, &GameController::uiCallback, this);
     
     for (int i = 0; i < TOTAL_STAT; i++) {
@@ -20,7 +21,7 @@ GameController::GameController():
 
 void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     CurrentStatusUI = status->data;
-    std::cout << CurrentStatusUI << std::endl;
+    std::cout << "SUBSCRIBING: " << CurrentStatusUI << std::endl;
     
     if (CurrentStatusUI == NO_UI_INFO) {
         // DO NOTHING!
@@ -30,11 +31,10 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         CurrentMove = CurrentStatusUI - 1; // change input to 0 - 8
         int row = CurrentMove / BoardState::BOARD_SIZE;
         int col = CurrentMove % BoardState::BOARD_SIZE;
+        
         addPieceTest(row, col);
         showBoardState();
         userPlacePiece(row, col);
-        
-        getBoardStateFromCamera();
         
         // CHECK FOR WINS
         bool setWon = indicateSetWinner();
@@ -44,20 +44,26 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             clearBoard();
+            std::cout << "SET WON BY OP" << std::endl;
             if (determineGameWinner()) {
                 endGame();
-            };
+                std::cout << "GAME WON" << std::endl;
+            }
+            else {
+                startGame(); // start another set
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         
-        // MAKE A MOVE
+        // Change current player to Robot
         determineCurrentPlayer();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        // Now robot makes move
         if (CurrentPlayer == AI) {
             decideMove();
         }
         
-        // CHECK IF ROBOT HAS WON THEN END THE SET AND SEND STATUS TO UI
+        // CHECK If the robot has won
         setWon = indicateSetWinner();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         
@@ -65,13 +71,18 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             clearBoard();
+            std::cout << "SET WON BY AI" << std::endl;
             if (determineGameWinner()) {
                 endGame();
-            };
+                std::cout << "GAME WON" << std::endl;
+            }
+            else {
+                startGame();
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         
-        // SET CURRENTPLAYER
+        // Change current player to User
         determineCurrentPlayer();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         CurrentMove = 0;
@@ -86,7 +97,6 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
             decideMove();
             determineCurrentPlayer();
         }
-        
     } else if (CurrentStatusUI == PAUSE_GAME) {
         GameActive = false;
     } else if (CurrentStatusUI == UNPAUSE_GAME) {
@@ -100,9 +110,19 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     }
 }
 
+bool GameController::testViolationCallBack(project::TestViolation::Request &req,
+                                           project::TestViolation::Response &res) {
+    BoardState b{req.curr};
+    BoardState next{req.next};
+    saveBoardState(b);
+
+    return validateMove(next);
+}
+
 void GameController::publishToUI(StatusController status) {
     std_msgs::Int32 msg;
     msg.data = status;
+    std::cout << "PUBLISHING: " << msg.data << std::endl;
     GameController::controllerPublisher.publish(msg);
 }
 
@@ -117,10 +137,19 @@ void GameController::startGame() {
     }
     else {
         // OBSOLETE: UI ENSURES DIFFICULTY IS ALWAYS SELECTED
-        SelectedDifficulty = GameController::Null;
     }
 
     GameActive = true;
+    
+    try {
+        clearBoard();
+    }
+    catch(std::exception ex) {
+    
+    }
+    
+    startRobot();
+    getBoardStateFromCamera();
     publishToUI(GAME_STARTED);
 }
 
@@ -177,6 +206,7 @@ void GameController::getBoardStateFromCamera() {
 
 bool GameController::indicateSetWinner() {
     /* TRIADS: ROWs, COLs, when row == col */
+    getBoardStateFromCamera();
     BoardState::Board board = mState.getBoard();
 
     bool winnerFound = false;
@@ -226,15 +256,18 @@ bool GameController::indicateSetWinner() {
         
         if (isFull) {
             controllerStatus.setWinners[SetCount] = DR;
+            winnerFound = true;
             publishToUI(DRAW_SET);
         }
     }
     else 
     {
         if (winner == 'x') {
+            controllerStatus.setWinners[SetCount] = AI;
             publishToUI(ROBOT_WIN_SET);
         }
         else if (winner == 'o') {
+            controllerStatus.setWinners[SetCount] = OP;
             publishToUI(PLAYER_WIN_SET);
         }
     }
@@ -257,26 +290,31 @@ bool GameController::determineGameWinner() {
     if (std::abs(OPwincount - AIwincount) > 1) {
         if (OPwincount < AIwincount) {
             controllerStatus.gameWinner = AI;
+            WinnerArray[SetCount-1] = AI;
             publishToUI(ROBOT_WIN_GAME);
             return true;
         }
         else if (AIwincount < OPwincount) {
             controllerStatus.gameWinner = OP;
+            WinnerArray[SetCount-1] = OP;
             publishToUI(PLAYER_WIN_GAME);
             return true;
         }
     }
     
-    if (SetCount == 2 && controllerStatus.gameWinner == NA) {
+    if (SetCount == 3) {
         controllerStatus.gameWinner = DR;
+        WinnerArray[SetCount-1] = DR;
         publishToUI(DRAW_GAME);
         return true;
     }
     
+    std::cout << "NO WINNERS YET" << std::endl;
     return false;
 }
 
 void GameController::decideMove() {
+    std::cout << "Deciding Move" << std::endl;
     BoardState::Board b = mState.getBoard();
     project::ImageRequest srv;
     srv.request.service = ImageProcessor::Request::SETUP;
@@ -285,14 +323,20 @@ void GameController::decideMove() {
     srv.request.service = ImageProcessor::Request::PROCESS;
     CameraClient.call(srv);
     
+    std::cout << "GOT HERE" << std::endl;
     project::BoardInfo info = srv.response.info;
-    auto point = info.pieces[0];
+    project::Point point;
+    
+    if (info.pieces.size() != 0) {
+        point = info.pieces[0];
+    }
     auto newBoard = BoardState(info.board);
     b = newBoard.getBoard();
     mState.setBoardState(newBoard);
 
     if (SelectedDifficulty == GameController::Null) {
         // TODO: Throw violation --> difficulty was somehow unset or unselected
+        std::cout << "NULL DIFFICULTY" << std::endl;
     }
     
     else if (SelectedDifficulty == GameController::Easy) {
@@ -371,7 +415,7 @@ void GameController::makeMove(const int &row, const int &col, project::Point obj
     mState.addPiece(col, row, 'x');
     robotPlacePiece(row, col, obj);
     mState.showBoardState();
-    StatusController position = static_cast<StatusController>(row*col+1);
+    StatusController position = static_cast<StatusController>((row*3)+(col+1));
     
     publishToUI(position);
 }
@@ -402,18 +446,56 @@ void GameController::startRobot() {
     project::UserMoveService userSrv;
     userSrv.request.service = GazeboController::Service::POWER_ON;
     userSrv.request.player = GazeboController::Player::O;
+
+    setPlayerPiece('o');
     
     userClient.call(userSrv);
 }
 
 void GameController::clearBoard() {
+    mState.emptyBoard();
     project::UserMoveService userSrv;
     userSrv.request.service = GazeboController::Service::CLEAR_BOARD;
     
     userClient.call(userSrv);
 }
 
-bool validateMove(const BoardState currentInput); // INCLUDES CHECKING FOR TIME AND 
+bool GameController::validateMove(BoardState &currentInput) {
+    BoardState::Board curr{mState.getBoard()};
+    BoardState::Board next{currentInput.getBoard()};
+    int totalNewPieces{0};
+
+    for (int row = 0; row < BoardState::BOARD_SIZE; row++) {
+        for (int col = 0; col < BoardState::BOARD_SIZE; col++) {
+            if (curr[row][col] != next[row][col]) {
+                if (curr[row][col] != ' ') {
+                    ROS_ERROR("Board Error: Invalid Change in Board State");
+                    return false;
+                } else if (next[row][col] != playerPiece) {
+                    ROS_ERROR("Board Error: Wrong piece placed on board");
+                    return false;
+                } else {
+                    totalNewPieces++;
+                }
+            }
+        }
+    }
+    if (totalNewPieces != 1) {
+        ROS_ERROR("Wrong number of pieces placed on the board");
+        return false;
+    }
+
+    return true;
+}
+
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 void GameController::endGame() {
     GameActive = false;

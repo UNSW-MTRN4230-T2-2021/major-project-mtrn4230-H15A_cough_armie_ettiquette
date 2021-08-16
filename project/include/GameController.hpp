@@ -13,6 +13,7 @@
 #include "ImageProcessor.hpp"
 #include "project/RobotMoveService.h"
 #include "project/UserMoveService.h"
+#include "project/TestViolation.h"
 #include "project/Point.h"
 #include "BoardState.hpp"
 #include "GazeboController.hpp"
@@ -87,6 +88,7 @@ private:
     ros::ServiceClient CameraClient;
     ros::ServiceClient robotClient;
     ros::ServiceClient userClient;
+    ros::ServiceServer testServer;
     ros::Subscriber uiSubscriber;
     ros::Publisher controllerPublisher;
 
@@ -95,6 +97,7 @@ private:
     bool SetStarted;
     int CurrentStatusUI;
     int CurrentMove; // number from 1-9, if this is -1 then no move was found
+    char playerPiece{'o'};
 
     Player CurrentPlayer;
     DifficultyLevel SelectedDifficulty;
@@ -116,6 +119,8 @@ public:
     void makeMove(const int &row, const int &col, project::Point obj);
 
     void uiCallback(const std_msgs::Int32::ConstPtr& status);
+    bool testViolationCallBack(project::TestViolation::Request &req,
+                               project::TestViolation::Response &res);
     GameController();
     void saveBoardState(BoardState &state) { mState.setBoardState(state); };
     void getBoardStateFromCamera();
@@ -126,9 +131,11 @@ public:
     bool indicateSetWinner();
     bool determineGameWinner();
     void decideMove(); 
-    bool validateMove(const BoardState currentInput);  
+    bool validateMove(BoardState &currentInput);  
     void throwViolation();
     void endGame(); // announce winner and clear board and ask if user wants to play again
+
+    void setPlayerPiece(const char &piece) { playerPiece = piece; }
 };
 
 #endif
