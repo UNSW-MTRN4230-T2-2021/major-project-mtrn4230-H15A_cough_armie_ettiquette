@@ -21,7 +21,7 @@ GameController::GameController():
 
 void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     CurrentStatusUI = status->data;
-    std::cout << CurrentStatusUI << std::endl;
+    std::cout << "SUBSCRIBING: " << CurrentStatusUI << std::endl;
     
     if (CurrentStatusUI == NO_UI_INFO) {
         // DO NOTHING!
@@ -44,31 +44,26 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             clearBoard();
-            std::cout << "SET WON" << std::endl;
+            std::cout << "SET WON BY OP" << std::endl;
             if (determineGameWinner()) {
                 endGame();
                 std::cout << "GAME WON" << std::endl;
             }
             else {
-                startGame();
-                publishToUI(GAME_STARTED);
-                determineCurrentPlayer();
-                if (CurrentPlayer == AI) {
-                    decideMove();
-                    determineCurrentPlayer();
-                }
+                startGame(); // start another set
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         
-        // MAKE A MOVE
+        // Change current player to Robot
         determineCurrentPlayer();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        // Now robot makes move
         if (CurrentPlayer == AI) {
             decideMove();
         }
         
-        // CHECK IF ROBOT HAS WON THEN END THE SET AND SEND STATUS TO UI
+        // CHECK If the robot has won
         setWon = indicateSetWinner();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         
@@ -76,24 +71,18 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         if (setWon) {
             SetCount++;
             clearBoard();
-            std::cout << "SET WON" << std::endl;
+            std::cout << "SET WON BY AI" << std::endl;
             if (determineGameWinner()) {
                 endGame();
                 std::cout << "GAME WON" << std::endl;
             }
             else {
                 startGame();
-                publishToUI(GAME_STARTED);
-                determineCurrentPlayer();
-                if (CurrentPlayer == AI) {
-                    decideMove();
-                    determineCurrentPlayer();
-                }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         
-        // SET CURRENTPLAYER
+        // Change current player to User
         determineCurrentPlayer();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         CurrentMove = 0;
@@ -108,7 +97,6 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
             decideMove();
             determineCurrentPlayer();
         }
-        
     } else if (CurrentStatusUI == PAUSE_GAME) {
         GameActive = false;
     } else if (CurrentStatusUI == UNPAUSE_GAME) {
@@ -161,7 +149,7 @@ void GameController::startGame() {
     }
     
     startRobot();
-    publishToUI(GAME_STARTED);
+    getBoardStateFromCamera();
 }
 
 void GameController::determineCurrentPlayer() {
@@ -267,15 +255,18 @@ bool GameController::indicateSetWinner() {
         
         if (isFull) {
             controllerStatus.setWinners[SetCount] = DR;
+            winnerFound = true;
             publishToUI(DRAW_SET);
         }
     }
     else 
     {
         if (winner == 'x') {
+            controllerStatus.setWinners[SetCount] = AI;
             publishToUI(ROBOT_WIN_SET);
         }
         else if (winner == 'o') {
+            controllerStatus.setWinners[SetCount] = OP;
             publishToUI(PLAYER_WIN_SET);
         }
     }
@@ -298,18 +289,21 @@ bool GameController::determineGameWinner() {
     if (std::abs(OPwincount - AIwincount) > 1) {
         if (OPwincount < AIwincount) {
             controllerStatus.gameWinner = AI;
+            WinnerArray[SetCount-1] = AI;
             publishToUI(ROBOT_WIN_GAME);
             return true;
         }
         else if (AIwincount < OPwincount) {
             controllerStatus.gameWinner = OP;
+            WinnerArray[SetCount-1] = OP;
             publishToUI(PLAYER_WIN_GAME);
             return true;
         }
     }
     
-    if (SetCount == 2 && controllerStatus.gameWinner == NA) {
+    if (SetCount == 3) {
         controllerStatus.gameWinner = DR;
+        WinnerArray[SetCount-1] = DR;
         publishToUI(DRAW_GAME);
         return true;
     }
@@ -502,6 +496,14 @@ void GameController::endGame() {
     CurrentMove = 0;
 }
 
+void GameController::endGame() {
+    GameActive = false;
+    SetCount = 0;
+    mState.emptyBoard();
+    SelectedDifficulty = Null;
+    CurrentPlayer = NA;
+    CurrentMove = 0;
+}
 
 int main(int argc, char **argv) {
     std::cout << "Controller Initiating...." << std::endl;
