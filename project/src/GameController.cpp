@@ -494,6 +494,9 @@ void GameController::endGame() {
     SelectedDifficulty = Null;
     CurrentPlayer = NA;
     CurrentMove = 0;
+    controllerStatus.setWinners[0] = NA;
+    controllerStatus.setWinners[1] = NA;
+    controllerStatus.setWinners[2] = NA;
 }
 
 int main(int argc, char **argv) {
