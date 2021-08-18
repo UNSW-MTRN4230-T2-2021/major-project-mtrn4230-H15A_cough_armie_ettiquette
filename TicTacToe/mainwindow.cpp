@@ -55,19 +55,25 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->scoreLabel->setText("Wins: --");
     ui->matchnoLabel->setText("Match No: --");
     ui->difficultyLabel->setText("Difficulty: --");
-    ui->whoseTurnLabel->setText("--");
+    ui->whoseTurnLabel->setText("Turn: --");
+
+//    qThreadSub = new QThread();
+//    qDebug() << "Moving Timer to Worker Thread...";
+//    timer->moveToThread(qThreadSub);
+//    qThreadSub->start();
 //    Qt::HANDLE threadNo = QThread::currentThreadId();
 //    qDebug() << threadNo;
 //    qThread->moveToThread(qThread);
-
-    // Testing
-//    buttonGroup->button(1)->setText("X");
-//    buttonGroup->button(4)->setText("X");
-//    buttonGroup->button(2)->setText("O");
+//    qThread->thread();
 }
 
 MainWindow::~MainWindow()
 {
+    delete buttonGroup;
+    delete secTimer;
+    delete timer;
+    delete qThreadMain;
+    delete qThreadSub;
     delete ui;
 }
 
@@ -90,7 +96,7 @@ void MainWindow::msgsToUserCallback(const std_msgs::Int32& _msgRcv)
      case boardR3C2:
      case boardR3C3:
          robotMoveId = msgRcv.data;
-         recordRobotMove();
+         recordRobotMove();           // SEGMENTATION FAULT X3
          break;
      case powerOn:
      case gameStart:
@@ -129,7 +135,8 @@ void MainWindow::timerExpired()
     msgSend.data = timerExp;
     msgsToController_pub.publish(msgSend);
 
-    QMessageBox::warning(this, "Timer Expired", "Time is up! Robot wins by default.");
+    QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::warning, "Timer Expired", "Time is up! Robot wins by default." ));
+
 }
 
 void MainWindow::timerControl()
@@ -147,9 +154,9 @@ void MainWindow::timerControl()
 void MainWindow::startUserTurn(){
 //   Qt::HANDLE threadNo = QThread::currentThreadId();
 //   qDebug() << threadNo;
-   timer->start(120000); // 2 minutes (120 seconds)
+//   timer->start(120000); // 2 minutes (120 seconds) // SEGMENTATION FAULT
 
-   QMessageBox::information(this, "STARTUSERTURN", "FUNCTION IS CALLED");
+   //QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "STARTUSERTURN", "FUNCTION IS CALLED");
 }
 
 void MainWindow::matchNoControl()
@@ -168,6 +175,24 @@ void MainWindow::matchNoControl()
         ui->matchnoLabel->setText("Match No: --");
         break;
   }
+}
+
+bool MainWindow::event(QEvent *event)
+{
+
+  if(event->type() == CreateInformationEventType){
+    PopUpEvent* wEvent = dynamic_cast<PopUpEvent*>(event);
+    switch(wEvent->type){
+    case PopUpEvent::PopUpType::information:
+      QMessageBox::information(this, wEvent->title, wEvent->text);
+      break;
+    case PopUpEvent::PopUpType::warning:
+      QMessageBox::warning(this,  wEvent->title, wEvent->text);
+      break;
+    }
+  }
+
+  return QMainWindow::event(event);
 }
 
 void MainWindow::buttonSelected(int buttonId) {
@@ -231,10 +256,10 @@ void MainWindow::basicInfoFunction()
 {
   switch(basicInfo){
       case powerOn:
-        QMessageBox::information(this, "Robot Power On", "Robot has been powered on!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information,  "Robot Power On", "Robot has been powered on!"));
         break;
       case gameStart:
-        QMessageBox::information(this, "Start Game", "Game starts now!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information,  "Start Game", "Game starts now!"));
         // Set match number
         matchNoControl();
         break;
@@ -251,13 +276,13 @@ void MainWindow::whoseTurnFunction()
         prevButtonId = -1;  // reset previous button tracker
         // Make boxes checkable
         toggleCheckableBoxes(false);
-        QMessageBox::information(this, "Robot Turn", "It is the robot's turn!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information,  "Robot Turn", "It is the robot's turn!"));
         break;
       case startPlayerTurn:
         ui->whoseTurnLabel->setText("Player's Turn");
         ui->pBEndTurn->setVisible(true);
         toggleCheckableBoxes(true);
-        QMessageBox::information(this, "Player Turn", "It is your turn!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Player Turn", "It is your turn!"));
         startUserTurn();
         break;
   }
@@ -275,15 +300,15 @@ void MainWindow::winOnceFunction()
   switch(winOnce){
       case robotWinOnce:
         gameWinner = 'R';
-        QMessageBox::information(this, "Robot Wins", "Robot wins this game!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Robot Wins", "Robot wins this game!"));
         break;
       case playerWinOnce:
         gameWinner = 'P';
-        QMessageBox::information(this, "Player Wins", "You win this game!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Player Wins", "You win this game!"));
         break;
       case drawOnce:
         gameWinner = 'D';
-        QMessageBox::information(this, "Draw", "This game is a draw!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Draw", "This game is a draw!"));
         break;
   }
 
@@ -300,6 +325,8 @@ void MainWindow::winOnceFunction()
         break;  
   }
 
+  // It is no-one's turn.
+  ui->whoseTurnLabel->setText("Turn: --");
   // Set new match number
   matchNoControl();
 
@@ -312,17 +339,18 @@ void MainWindow::winOnceFunction()
 
 void MainWindow::winAllFunction()
 {
-  //TEST GAME THOROUGHLY
+  // TEST GAME THOROUGHLY
   // PLAY THROUGH ENTIRE GAME AS IF A PROPER GAME IS PLAYED.
+  // WINALL FUNCTION SHOULD RESET ALL TEXT ON MAINWINDOW
   switch(winAll){
       case robotWinAll:
-        QMessageBox::information(this, "Robot Wins Overall", "Robot is the overall winner!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Robot Wins Overall", "Robot is the overall winner!"));
         break;
       case playerWinAll:
-        QMessageBox::information(this, "Player Wins Overall", "You are the overall winner!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Player Wins Overall", "You are the overall winner!"));
         break;
       case drawAll:
-        QMessageBox::information(this, "Overall Draw", " There is a draw overall!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Overall Draw", " There is a draw overall!"));
         break;
   }
   // Reset member variables
@@ -332,9 +360,11 @@ void MainWindow::winAllFunction()
   // reset game board
   resetGameBoard();
 
-  // Prompt new game or power off
-
-
+  // Reset labels on user interface
+  ui->scoreLabel->setText("Wins: --");
+  ui->matchnoLabel->setText("Match No: --");
+  ui->difficultyLabel->setText("Difficulty: --");
+  ui->whoseTurnLabel->setText("Turn: --");
 }
 
 void MainWindow::recordRobotMove()
@@ -354,7 +384,7 @@ void MainWindow::on_pBEndTurn_clicked()
       // if no button has been pressed
 
       if(selectedButton == -1) {
-        QMessageBox::warning(this, "No Move Selected", "Please select a tile for your next move!");
+        QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::warning, "No Move Selected", "Please select a tile for your next move!" ));
       }
       // if a button has been pressed
       else {
@@ -379,21 +409,30 @@ void MainWindow::on_actionNew_Game_triggered()
     QMessageBox chooseDifficulty;
     chooseDifficulty.setWindowTitle("New Game");
     chooseDifficulty.setText("Choose Your Difficulty: Easy or Hard?");
-    QAbstractButton* pButtonEasy = chooseDifficulty.addButton("Easy", QMessageBox::NoRole);
-    QAbstractButton* pButtonHard = chooseDifficulty.addButton("Hard", QMessageBox::YesRole);
-
+    QAbstractButton* pButtonEasy = chooseDifficulty.addButton("Easy", QMessageBox::RejectRole);
+    QAbstractButton* pButtonHard = chooseDifficulty.addButton("Hard", QMessageBox::AcceptRole);
+    QAbstractButton* pButtonExit = chooseDifficulty.addButton("Exit", QMessageBox::DestructiveRole);
     chooseDifficulty.exec();
 
     if(chooseDifficulty.clickedButton() == pButtonEasy){
        ui->difficultyLabel->setText("Difficulty: Easy");
        msgSend.data = newGameEasy; // Prepare to send controller easy difficulty signal
-
     }
     else if(chooseDifficulty.clickedButton() == pButtonHard) {
        ui->difficultyLabel->setText("Difficulty: Hard");
        msgSend.data = newGameHard; // Prepare to send controller hard difficulty signal
     }
 
+    if(chooseDifficulty.clickedButton() == pButtonEasy ||
+       chooseDifficulty.clickedButton() == pButtonHard){
+       // Clear UI and board data
+      ui->scoreLabel->setText("Wins: --");
+      ui->whoseTurnLabel->setText("Turn: --");
+      winCount = noInfoCont;
+      resetVariables();
+      matchNoControl();
+      resetGameBoard();
+    }
     msgsToController_pub.publish(msgSend);
 }
 
@@ -413,11 +452,11 @@ void MainWindow::on_actionPower_Off_triggered()
   }
 
 }
-
-// Open documentation window when "help" is selected
 void MainWindow::on_actionDocumentation_triggered()
 {
     docWindow docwindow;
+
+// Open documentation window when "help" is selected
     docwindow.setModal(true);
     docwindow.exec();
 
@@ -428,23 +467,12 @@ void MainWindow::on_actionDocumentation_triggered()
 ---------------------------*/
 void MainWindow::on_pBR1C1_clicked()
 {
-//    ui->pBR1C1->toggle();
-//     if(ui->pBR1C1->isChecked())
-//        ui->pBR1C1->setText("O");
-//     else
-//      ui->pBR1C1->setText("EEE");
 }
 
-
 // Things to Fix or Implement:
-// Function WinAllFunction : prompt user to start new game or power off
 // fix bug with end turn button disappearing without tile being chosen
-// reset board and all variables at end of each win, and at end of ultimate win
 // Fix up timer (timer tim.X?)
-// take screenshot of UI mid game for nethmini
-
-
-// Questions for Team:
-// How will the UI get the most recent board state? It just needs to know where to mark the X of the robot's turn
-// What sort of test cases should I write for the UI?
-// I feel like the test cases specified in our requirements doc could be improved. WHat sort of format are you guys using for your test cases?
+// make timer: 0 be timer: --
+// fix up new game - reject role is the x in the corner - easy is default value
+// take updated screenshot of UI mid game for nethmini
+// FIX ALL SEGMENTATION FAULTS - tagged in code using comments 

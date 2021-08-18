@@ -406,7 +406,8 @@ qrc_Resources.cpp: Resources.qrc \
 		/usr/lib/qt5/bin/rcc \
 		images/Help.jpg \
 		images/PowerOff.svg \
-		images/NewGame.png
+		images/NewGame.png \
+		images/AnnotatedUI.png
 	/usr/lib/qt5/bin/rcc -name Resources Resources.qrc -o qrc_Resources.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h

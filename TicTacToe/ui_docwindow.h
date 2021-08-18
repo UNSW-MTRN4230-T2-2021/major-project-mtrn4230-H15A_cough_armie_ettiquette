@@ -16,6 +16,7 @@
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QTextEdit>
 
 QT_BEGIN_NAMESPACE
 
@@ -23,17 +24,21 @@ class Ui_docWindow
 {
 public:
     QDialogButtonBox *buttonBox;
+    QTextEdit *textEdit;
 
     void setupUi(QDialog *docWindow)
     {
         if (docWindow->objectName().isEmpty())
             docWindow->setObjectName(QStringLiteral("docWindow"));
-        docWindow->resize(400, 300);
+        docWindow->resize(906, 526);
         buttonBox = new QDialogButtonBox(docWindow);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
-        buttonBox->setGeometry(QRect(30, 240, 341, 32));
+        buttonBox->setGeometry(QRect(550, 480, 341, 32));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+        textEdit = new QTextEdit(docWindow);
+        textEdit->setObjectName(QStringLiteral("textEdit"));
+        textEdit->setGeometry(QRect(0, 0, 911, 471));
 
         retranslateUi(docWindow);
         QObject::connect(buttonBox, SIGNAL(accepted()), docWindow, SLOT(accept()));

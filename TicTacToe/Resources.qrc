@@ -4,4 +4,7 @@
         <file>images/NewGame.png</file>
         <file>images/PowerOff.svg</file>
     </qresource>
+    <qresource prefix="/docimgs">
+        <file>images/AnnotatedUI.png</file>
+    </qresource>
 </RCC>

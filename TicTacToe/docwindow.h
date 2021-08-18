@@ -2,6 +2,8 @@
 #define DOCWINDOW_H
 
 #include <QDialog>
+#include <QTextEdit>
+#include <QScrollArea>
 
 namespace Ui {
 class docWindow;
@@ -17,6 +19,9 @@ public:
 
 private:
   Ui::docWindow *ui;
+  QScrollArea *scrollArea;
+
+  QString text;
 };
 
 #endif // DOCWINDOW_H
