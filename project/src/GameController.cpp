@@ -150,7 +150,6 @@ void GameController::startGame() {
     
     startRobot();
     getBoardStateFromCamera();
-    publishToUI(GAME_STARTED);
 }
 
 void GameController::determineCurrentPlayer() {
