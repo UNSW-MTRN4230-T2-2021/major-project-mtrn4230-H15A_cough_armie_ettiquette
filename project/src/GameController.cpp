@@ -289,23 +289,32 @@ bool GameController::determineGameWinner() {
     if (std::abs(OPwincount - AIwincount) > 1) {
         if (OPwincount < AIwincount) {
             controllerStatus.gameWinner = AI;
-            WinnerArray[SetCount-1] = AI;
             publishToUI(ROBOT_WIN_GAME);
             return true;
         }
         else if (AIwincount < OPwincount) {
             controllerStatus.gameWinner = OP;
-            WinnerArray[SetCount-1] = OP;
             publishToUI(PLAYER_WIN_GAME);
             return true;
         }
     }
     
     if (SetCount == 3) {
-        controllerStatus.gameWinner = DR;
-        WinnerArray[SetCount-1] = DR;
-        publishToUI(DRAW_GAME);
-        return true;
+        if (OPwincount < AIwincount) {
+            controllerStatus.gameWinner = AI;
+            publishToUI(ROBOT_WIN_GAME);
+            return true;
+        }
+        else if (AIwincount < OPwincount) {
+            controllerStatus.gameWinner = OP;
+            publishToUI(PLAYER_WIN_GAME);
+            return true;
+        }
+        else {
+            controllerStatus.gameWinner = DR;
+            publishToUI(DRAW_GAME);
+            return true;
+        }
     }
     
     std::cout << "NO WINNERS YET" << std::endl;
