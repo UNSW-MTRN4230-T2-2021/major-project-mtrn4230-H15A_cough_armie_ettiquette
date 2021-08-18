@@ -53,6 +53,7 @@ void testSpawnOnLine(ros::NodeHandle &n) {
         p.y = pair.second;
         srv.request.goal = p;
         assert(client.call(srv));
+        ros::Duration(0.25).sleep();
         assert(!iclient.call(isrv));
         srv.request.service = GazeboController::Service::CLEAR_BOARD;
         assert(client.call(srv));
@@ -195,9 +196,9 @@ int main(int argc, char **argv) {
 
     ros::init(argc, argv, "violation_test");
     ros::NodeHandle n;
-    // powerOn(n); 
-    // testSpawnOnLine(n);
-    // testSpawnTwoPiecesSameSquare(n); 
+    powerOn(n); 
+    testSpawnOnLine(n);
+    testSpawnTwoPiecesSameSquare(n); 
     
     testIncorrectNewPiece(n);
     testMultiplePiecesPlaced(n);
