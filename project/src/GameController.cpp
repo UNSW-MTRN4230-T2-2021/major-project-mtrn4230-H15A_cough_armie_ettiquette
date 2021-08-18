@@ -480,20 +480,11 @@ bool GameController::validateMove(BoardState &currentInput) {
         }
     }
     if (totalNewPieces != 1) {
-        ROS_ERROR("Wrong number of pieces placed on the board");
+        ROS_ERROR("Board Error: Wrong number of pieces placed on the board");
         return false;
     }
 
     return true;
-}
-
-void GameController::endGame() {
-    GameActive = false;
-    SetCount = 0;
-    mState.emptyBoard();
-    SelectedDifficulty = Null;
-    CurrentPlayer = NA;
-    CurrentMove = 0;
 }
 
 void GameController::endGame() {
