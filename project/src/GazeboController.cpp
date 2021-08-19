@@ -266,6 +266,8 @@ bool GazeboController::clearBoard() {
     deleteModel.waitForExistence();
     gazebo_msgs::DeleteModel srv;
 
+    ROS_INFO("%d %d", mNumPlayer, mNumRobot);
+
     for (int i = 0; i < mNumPlayer; i++) {
         std::string pieceName{pieceNames[mPlayer] + std::to_string(i)};
         srv.request.model_name = pieceName;
