@@ -107,11 +107,12 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         
     } else if (CurrentStatusUI == TIMER_EXPIRED) {
         controllerStatus.setWinners[SetCount] = AI;
-        SetCount++;
-        publishToUI(ROBOT_WIN_SET);
-        clearBoard();
         
+        SetCount++;
+        clearBoard();
+        publishToUI(ROBOT_WIN_SET);
         std::cout << "SET WON BY TIMER FOR AI" << std::endl;
+        
         if (determineGameWinner()) {
             std::cout << "GAME WON" << std::endl;
             endGame();
@@ -119,9 +120,37 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         else {
             std::cout << "Starting Anoter Set" << std::endl;
             startGame();
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        
+            determineCurrentPlayer();
+            
+            // Now robot makes move
+            if (CurrentPlayer == AI) {
+                decideMove();
+            }
+            
+            // CHECK If the robot has won
+            bool setWon = indicateSetWinner();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            
+            // CHECK IF ANYONE HAS WON THE ENTIRE GAME
+            if (setWon) {
+                SetCount++;
+                clearBoard();
+                std::cout << "SET WON BY AI" << std::endl;
+                if (determineGameWinner()) {
+                    endGame();
+                    std::cout << "GAME WON" << std::endl;
+                }
+                else {
+                    startGame();
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+            
+            // Change current player to User
+            determineCurrentPlayer();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            CurrentMove = 0;
+       }
     } else {
         // DO NOTHING!
     }
@@ -167,6 +196,7 @@ void GameController::startGame() {
     
     startRobot();
     getBoardStateFromCamera();
+    publishToUI(GAME_STARTED);
 }
 
 void GameController::determineCurrentPlayer() {

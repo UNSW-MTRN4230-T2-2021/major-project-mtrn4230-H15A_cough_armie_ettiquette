@@ -129,7 +129,7 @@ void MainWindow::timerExpired()
     msgSend.data = timerExp;
     msgsToController_pub.publish(msgSend);
 
-    QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::warning, "Timer Expired", "Time is up! Robot wins by default." ));
+    QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::warning, "Timer Expired", "Time is up!" ));
   }
 }
 
