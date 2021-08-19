@@ -9,9 +9,10 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QDebug>
+#include <QEvent>
 #include <QThread>
 #include <QButtonGroup>
-
+#include <QString>
 
 namespace Ui {
 class MainWindow;
@@ -81,6 +82,8 @@ public:
     void winAllFunction();
     void recordRobotMove();     // check the robot moves are recorded properly
 
+    bool event(QEvent *);
+
 public slots:
    void timerExpired();
    void timerControl();
@@ -98,9 +101,16 @@ private slots:
    void on_pBR1C1_clicked();
 
 private:
+    static const QEvent::Type CreateInformationEventType = static_cast<QEvent::Type>(9999);
+    static const QEvent::Type StartTimerEventType = static_cast<QEvent::Type>(9000);
+    static const QEvent::Type StopTimerEventType = static_cast<QEvent::Type>(9001);
+
     Ui::MainWindow *ui;
-    //QThread *qThread;
     QButtonGroup *buttonGroup;
+
+    QThread *qThreadMain;
+    QThread *qThreadSub;
+
     int prevButtonId = -1;
     int robotMoveId = -1;
     int selectedButton = -1;
@@ -120,6 +130,20 @@ private:
 
     QTimer *timer;
     QTimer *secTimer;
+
+    class PopUpEvent : public QEvent {
+
+    public:
+      enum PopUpType{
+        warning,
+        information,
+      };
+      explicit PopUpEvent(PopUpType type, QString title, QString text) : QEvent(CreateInformationEventType), type(type), title(title), text(text) {}
+      PopUpType type;
+      QString title;
+      QString text;
+
+    };
 };
 
 #endif // MAINWINDOW_H
