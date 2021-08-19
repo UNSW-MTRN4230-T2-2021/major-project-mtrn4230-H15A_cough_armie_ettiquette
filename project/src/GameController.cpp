@@ -72,7 +72,6 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
             SetCount++;
             clearBoard();
             std::cout << "SET WON BY AI" << std::endl;
-            publishToUI(ROBOT_WIN_SET);
             if (determineGameWinner()) {
                 endGame();
                 std::cout << "GAME WON" << std::endl;
@@ -109,14 +108,16 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
     } else if (CurrentStatusUI == TIMER_EXPIRED) {
         controllerStatus.setWinners[SetCount] = AI;
         SetCount++;
+        publishToUI(ROBOT_WIN_SET);
         clearBoard();
         
-        std::cout << "SET WON BY AI" << std::endl;
+        std::cout << "SET WON BY TIMER FOR AI" << std::endl;
         if (determineGameWinner()) {
-            endGame();
             std::cout << "GAME WON" << std::endl;
+            endGame();
         }
         else {
+            std::cout << "Starting Anoter Set" << std::endl;
             startGame();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
