@@ -72,6 +72,7 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
             SetCount++;
             clearBoard();
             std::cout << "SET WON BY AI" << std::endl;
+            publishToUI(ROBOT_WIN_SET);
             if (determineGameWinner()) {
                 endGame();
                 std::cout << "GAME WON" << std::endl;
