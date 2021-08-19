@@ -42,16 +42,25 @@
 | **Information**     | **Number** | **Description** |
 |---------------------|------------|-----------------|
 | No Information      | 0          |                 |
-| Robot Power On      | 1          |                 |
-| Game Start          | 2          |                 |
-| Start Robot Turn    | 3          |                 |
-| Start User Turn     | 4          |                 |
-| Robot Wins Once     | 10         |                 |
-| Player Wins Once    | 11         |                 |
-| Draw Happens Once   | 12         |                 |
-| Robot Wins Overall  | 20         |                 |
-| Player Wins Overall | 21         |                 |
-| Draw Overall        | 22         |                 |
+| Position 1          | 1          |                 |
+| Position 2          | 2          |                 |
+| Position 3          | 3          |                 |
+| Position 4          | 4          |                 |
+| Position 5          | 5          |                 |
+| Position 6          | 6          |                 |
+| Position 7          | 7          |                 |
+| Position 8          | 8          |                 |
+| Position 9          | 9          |                 |
+| Robot Power On      | 10         |                 |
+| Game Start          | 11         |                 |
+| Start User Turn     | 12         |                 |
+| Start Robot Turn    | 13         |                 |
+| Robot Wins Once     | 14         |                 |
+| Player Wins Once    | 15         |                 |
+| Draw Happens Once   | 16         |                 |
+| Robot Wins Overall  | 17         |                 |
+| Player Wins Overall | 18         |                 |
+| Draw Overall        | 19         |                 |
 
 **msgstoController Topic: (int uiStatus)**
 
@@ -69,11 +78,10 @@
 | Place Piece in Position 9  | 9          | Send to the controller row: 2 and col: 2 after user ends their turn                                                     |
 | Start New Game: Easy       | 10         |                                                                                                                         |
 | Start New Game: Hard       | 11         |                                                                                                                         |
-| End User Turn              | 12         | Lets the controller know that the robot can now take its turn                                                           |
-| Timer Expired              | 13         | Only sends when timer has expired                                                                                       |
-| Pause Game                 | 14         | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
-| Power Off                  | 15         | Can power the robot off mid-game (optional)                                                                             |
-| Violation Resolved by User | 16         | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
+| Timer Expired              | 12         | Only sends when timer has expired                                                                                       |
+| Pause Game                 | 13         | Used when the player wants to take a break, or is reading the documentation. (optional)                                 |
+| Power Off                  | 14         | Can power the robot off mid-game (optional)                                                                             |
+| Violation Resolved by User | 15         | Controller should check that all violations actually have been resolved, after receiving this status number. (optional) |
 
 **ruleViolation Topic: (int dataRequest, string message)**
 
