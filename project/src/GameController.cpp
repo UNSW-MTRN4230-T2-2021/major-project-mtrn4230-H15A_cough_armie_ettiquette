@@ -105,6 +105,21 @@ void GameController::uiCallback(const std_msgs::Int32::ConstPtr& status) {
         
     } else if (CurrentStatusUI == VIOLATION_RESOLVED) {
         
+    } else if (CurrentStatusUI == TIMER_EXPIRED) {
+        controllerStatus.setWinners[SetCount] = AI;
+        SetCount++;
+        clearBoard();
+        
+        std::cout << "SET WON BY AI" << std::endl;
+        if (determineGameWinner()) {
+            endGame();
+            std::cout << "GAME WON" << std::endl;
+        }
+        else {
+            startGame();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        
     } else {
         // DO NOTHING!
     }
