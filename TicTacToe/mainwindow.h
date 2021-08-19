@@ -102,6 +102,9 @@ private slots:
 
 private:
     static const QEvent::Type CreateInformationEventType = static_cast<QEvent::Type>(9999);
+    static const QEvent::Type StartTimerEventType = static_cast<QEvent::Type>(9000);
+    static const QEvent::Type StopTimerEventType = static_cast<QEvent::Type>(9001);
+
     Ui::MainWindow *ui;
     QButtonGroup *buttonGroup;
 
@@ -127,6 +130,7 @@ private:
 
     QTimer *timer;
     QTimer *secTimer;
+
     class PopUpEvent : public QEvent {
 
     public:

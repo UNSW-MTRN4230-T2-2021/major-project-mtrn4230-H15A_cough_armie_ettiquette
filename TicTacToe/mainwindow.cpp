@@ -56,15 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->matchnoLabel->setText("Match No: --");
     ui->difficultyLabel->setText("Difficulty: --");
     ui->whoseTurnLabel->setText("Turn: --");
-
-//    qThreadSub = new QThread();
-//    qDebug() << "Moving Timer to Worker Thread...";
-//    timer->moveToThread(qThreadSub);
-//    qThreadSub->start();
-//    Qt::HANDLE threadNo = QThread::currentThreadId();
-//    qDebug() << threadNo;
-//    qThread->moveToThread(qThread);
-//    qThread->thread();
 }
 
 MainWindow::~MainWindow()
@@ -132,11 +123,14 @@ void MainWindow::msgsToUserCallback(const std_msgs::Int32& _msgRcv)
 // Publishes timerExp status and sends message to user that timer has expired
 void MainWindow::timerExpired()
 {
+  if (msgSend.data != timerExp){
+    QCoreApplication::postEvent(this, new QEvent(StopTimerEventType));
+    ui->pBEndTurn->setVisible(false);
     msgSend.data = timerExp;
     msgsToController_pub.publish(msgSend);
 
     QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::warning, "Timer Expired", "Time is up! Robot wins by default." ));
-
+  }
 }
 
 void MainWindow::timerControl()
@@ -144,7 +138,7 @@ void MainWindow::timerControl()
     QString timerText = QString::number(timer->remainingTime()/1000);
 
     ui->timerLabel->setText("Time Left: " +timerText);
-    // OPTIONAL: Convert to minutes and seconds
+        // OPTIONAL: Convert to minutes and seconds
 }
 
 /*--------------
@@ -154,7 +148,7 @@ void MainWindow::timerControl()
 void MainWindow::startUserTurn(){
 //   Qt::HANDLE threadNo = QThread::currentThreadId();
 //   qDebug() << threadNo;
-//   timer->start(120000); // 2 minutes (120 seconds) // SEGMENTATION FAULT
+   timer->start(120000); // 2 minutes (120 seconds) // SEGMENTATION FAULT
 
    //QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "STARTUSERTURN", "FUNCTION IS CALLED");
 }
@@ -190,6 +184,14 @@ bool MainWindow::event(QEvent *event)
       QMessageBox::warning(this,  wEvent->title, wEvent->text);
       break;
     }
+  }
+
+  if(event->type() == StartTimerEventType){
+    timer->start(120000);
+    //timer->start(5000);
+  }
+  else if(event->type() == StopTimerEventType){
+    timer->stop();
   }
 
   return QMainWindow::event(event);
@@ -283,7 +285,8 @@ void MainWindow::whoseTurnFunction()
         ui->pBEndTurn->setVisible(true);
         toggleCheckableBoxes(true);
         QCoreApplication::postEvent(this, new PopUpEvent(PopUpEvent::PopUpType::information, "Player Turn", "It is your turn!"));
-        startUserTurn();
+        // start timer
+        QCoreApplication::postEvent(this, new QEvent(StartTimerEventType));
         break;
   }
 
@@ -395,7 +398,7 @@ void MainWindow::on_pBEndTurn_clicked()
         // Tell controller what square user has chosen at end of their turn
         msgsToController_pub.publish(msgSend);
         // timer stops as end of turn is reached
-        timer->stop();
+        QCoreApplication::postEvent(this, new QEvent(StopTimerEventType));
       }
     }
 }
